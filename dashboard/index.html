@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · IMD Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080C12;--bg2:#0D1117;--bg3:#111820;
+  --cy:#00D4FF;--cy2:#00B8D9;--teal:#00897B;--teal2:#4DB6AC;
+  --gold:#D4A847;--gold2:#F5CC6B;--am:#FFD740;
+  --gl:rgba(0,212,255,0.04);--gl2:rgba(0,212,255,0.07);
+  --gb:rgba(0,212,255,0.09);--gb2:rgba(0,212,255,0.18);
+  --gld:rgba(212,168,71,0.08);--gldb:rgba(212,168,71,0.2);
+  --t:#E8F4F8;--t2:#9DB8C8;--t3:#4A6070;
+  --gn:#00E676;--rd:#FF5252;--am2:#FFD740;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;}
+
+/* TOP BAR */
+.top-bar{padding:14px 28px;border-bottom:1px solid var(--gb);display:flex;align-items:center;gap:12px;background:rgba(8,12,18,0.85);backdrop-filter:blur(16px);position:sticky;top:0;z-index:50;}
+.top-bar-brand{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.top-bar-sep{color:var(--t3);font-size:0.7rem;}
+.top-bar-cur{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.top-bar-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.top-bar-link{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-decoration:none;transition:color 0.2s;padding:6px 10px;border-radius:var(--r8);}
+.top-bar-link:hover{color:var(--gold);}
+.top-bar-link.active{color:var(--cy2);}
+.user-pill{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;background:var(--gl2);border:1px solid var(--gb);border-radius:999px;cursor:pointer;}
+.user-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--cy2),var(--teal));display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:#fff;}
+.user-name{font-size:0.75rem;font-weight:600;color:var(--t);}
+
+/* LAYOUT */
+.page-wrap{max-width:1100px;margin:0 auto;padding:36px 24px;}
+
+/* GREETING */
+.greeting{margin-bottom:28px;}
+.greeting-hello{font-size:0.75rem;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;}
+.greeting-name{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--t),var(--t2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.greeting-company{font-size:0.85rem;color:var(--t3);margin-top:4px;}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+.grid-apps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+
+/* CARDS */
+.card{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r20);overflow:hidden;position:relative;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,0.3),transparent);}
+.card-head{padding:16px 20px 12px;border-bottom:1px solid var(--gb);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:var(--t2);}
+.card-body{padding:20px;}
+
+/* SUBSCRIPTION STATUS */
+.sub-status{display:flex;align-items:flex-start;gap:16px;padding:18px 20px;}
+.sub-icon{font-size:2.2rem;flex-shrink:0;}
+.sub-info{flex:1;}
+.sub-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:1.5px;font-weight:700;text-transform:uppercase;margin-bottom:8px;}
+.badge-trial{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);color:var(--cy2);}
+.badge-active{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.25);color:var(--gn);}
+.badge-pending{background:rgba(255,215,64,0.1);border:1px solid rgba(255,215,64,0.25);color:var(--am);}
+.badge-expired{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.25);color:var(--rd);}
+.badge-none{background:var(--gl2);border:1px solid var(--gb);color:var(--t3);}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sub-plan{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--t);margin-bottom:4px;}
+.sub-detail{font-size:0.8rem;color:var(--t3);line-height:1.6;}
+.sub-expires{font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--t3);margin-top:6px;}
+.trial-bar-wrap{padding:0 20px 16px;}
+.trial-bar-label{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--t3);margin-bottom:6px;}
+.trial-bar{height:4px;background:var(--gl2);border-radius:999px;overflow:hidden;}
+.trial-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cy2),var(--teal));transition:width 0.6s ease;}
+
+/* STAT CARDS */
+.stat-card{padding:20px;text-align:center;}
+.stat-icon{font-size:1.8rem;margin-bottom:10px;}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--t);margin-bottom:4px;}
+.stat-label{font-size:0.72rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}
+
+/* APP BUTTONS */
+.app-btn{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 16px;border-radius:var(--r16);border:1px solid var(--gb);background:var(--gl2);text-decoration:none;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.app-btn:hover{border-color:var(--cy);background:var(--gl);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,212,255,0.1);}
+.app-btn.locked{opacity:0.4;cursor:not-allowed;pointer-events:none;}
+.app-btn.locked:hover{transform:none;box-shadow:none;}
+.app-btn-icon{font-size:2rem;}
+.app-btn-name{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:var(--t);text-align:center;}
+.app-btn-tag{font-size:0.65rem;color:var(--t3);text-align:center;}
+.app-lock{position:absolute;top:10px;right:10px;font-size:0.65rem;}
+.app-trial-tag{position:absolute;top:8px;left:8px;background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--cy2);font-size:0.55rem;font-family:'JetBrains Mono',monospace;letter-spacing:1px;padding:2px 6px;border-radius:4px;text-transform:uppercase;}
+
+/* COMPANY INFO */
+.info-row{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.info-icon{font-size:1rem;color:var(--t3);width:20px;flex-shrink:0;margin-top:2px;}
+.info-label{font-size:0.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+.info-val{font-size:0.88rem;color:var(--t);}
+
+/* TEAM */
+.team-member{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r12);background:var(--gl);margin-bottom:8px;}
+.team-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#fff;flex-shrink:0;}
+.team-name{font-weight:600;font-size:0.88rem;}
+.team-email{font-size:0.72rem;color:var(--t3);}
+.role-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase;background:var(--gl2);border:1px solid var(--gb);color:var(--t3);}
+.role-badge.owner{border-color:var(--gldb);color:var(--gold);}
+
+/* PAYMENTS */
+.pay-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,212,255,0.06);}
+.pay-row:last-child{border-bottom:none;}
+.pay-plan{font-weight:600;font-size:0.85rem;flex:1;}
+.pay-amount{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--t2);}
+.pay-date{font-size:0.7rem;color:var(--t3);}
+.status-pill{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+.s-approved{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.2);color:var(--gn);}
+.s-pending{background:rgba(255,215,64,0.1);border:1px solid rgba(255,215,64,0.2);color:var(--am);}
+.s-rejected{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.2);color:var(--rd);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--r12);padding:11px 22px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.2s;text-decoration:none;border:none;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;}
+.btn-gold:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,71,0.25);}
+.btn-cy{background:linear-gradient(135deg,var(--cy2),var(--teal));color:#fff;}
+.btn-cy:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--gb2);padding:9px 18px;font-size:0.78rem;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-sm{padding:7px 14px;font-size:0.75rem;}
+.btn-full{width:100%;}
+
+/* EMPTY / LOADING */
+.empty{text-align:center;padding:32px;color:var(--t3);font-size:0.82rem;}
+.skeleton{background:linear-gradient(90deg,var(--gl) 25%,var(--gl2) 50%,var(--gl) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r8);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ALERT */
+.alert-bar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:var(--r12);margin-bottom:16px;font-size:0.85rem;}
+.alert-trial{background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);color:var(--cy2);}
+.alert-warning{background:rgba(255,215,64,0.06);border:1px solid rgba(255,215,64,0.2);color:var(--am2);}
+.alert-bar a{color:inherit;font-weight:700;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--gb);padding:24px 28px;display:flex;align-items:center;justify-content:space-between;margin-top:40px;}
+.footer-brand{font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.footer-links{display:flex;gap:20px;}
+.footer-link{font-size:0.72rem;color:var(--t3);text-decoration:none;font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;}
+.footer-link:hover{color:var(--gold);}
+
+@media(max-width:768px){
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .grid-apps{grid-template-columns:1fr 1fr;}
+  .page-wrap{padding:24px 16px;}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="/" class="top-bar-brand">IMD · Ingat Masa Depan</a>
+  <span class="top-bar-sep">›</span>
+  <span class="top-bar-cur">Dashboard</span>
+  <div class="top-bar-right">
+    <a href="/imd-toolkit/" class="top-bar-link">Toolkit</a>
+    <a href="/subscribe/" class="top-bar-link">Berlangganan</a>
+    <div class="user-pill" onclick="doLogout()" title="Klik untuk logout">
+      <div class="user-av" id="userAv">?</div>
+      <span class="user-name" id="userName">Loading...</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Alert bar (trial / warning) -->
+  <div id="alertBar" style="display:none"></div>
+
+  <!-- Greeting -->
+  <div class="greeting">
+    <div class="greeting-hello">Selamat datang kembali</div>
+    <div class="greeting-name" id="greetName">—</div>
+    <div class="greeting-company" id="greetCompany">—</div>
+  </div>
+
+  <!-- Row 1: Subscription + Quick Stats -->
+  <div class="grid-2" style="grid-template-columns:1.4fr 1fr">
+
+    <!-- Subscription Card -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Status Langganan</span>
+        <a href="/subscribe/" class="btn btn-ghost btn-sm" id="upgradeBtn" style="display:none">Upgrade →</a>
+      </div>
+      <div class="sub-status" id="subStatus">
+        <div class="sub-icon">⏳</div>
+        <div class="sub-info">
+          <div class="sub-badge badge-none"><div class="badge-dot"></div>Memuat...</div>
+          <div class="sub-plan">—</div>
+          <div class="sub-detail">—</div>
+        </div>
+      </div>
+      <div class="trial-bar-wrap" id="trialBarWrap" style="display:none">
+        <div class="trial-bar-label">
+          <span>Masa Trial</span>
+          <span id="trialBarLabel">7/7 hari</span>
+        </div>
+        <div class="trial-bar"><div class="trial-bar-fill" id="trialBarFill" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="card">
+      <div class="card-head"><span class="card-title">Info Akun</span></div>
+      <div class="grid-3" style="gap:0;border-top:none;margin-bottom:0">
+        <div class="stat-card" style="border-right:1px solid var(--gb)">
+          <div class="stat-icon">👥</div>
+          <div class="stat-val" id="statMembers">—</div>
+          <div class="stat-label">Tim</div>
+        </div>
+        <div class="stat-card" style="border-right:1px solid var(--gb)">
+          <div class="stat-icon">📋</div>
+          <div class="stat-val" id="statPayments">—</div>
+          <div class="stat-label">Pembayaran</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-val" id="statDaysLeft">—</div>
+          <div class="stat-label">Hari lagi</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 2: App Access -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head">
+      <span class="card-title">FinanceBook Apps</span>
+      <a href="/imd-toolkit/" class="btn btn-ghost btn-sm">Semua Tools →</a>
+    </div>
+    <div class="card-body">
+      <div class="grid-apps" id="appGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Company Info + Team -->
+  <div class="grid-2">
+
+    <!-- Company -->
+    <div class="card">
+      <div class="card-head"><span class="card-title">Informasi Perusahaan</span></div>
+      <div class="card-body" id="companyInfo">
+        <div class="skeleton" style="height:16px;margin-bottom:12px;width:60%"></div>
+        <div class="skeleton" style="height:12px;margin-bottom:8px;width:80%"></div>
+        <div class="skeleton" style="height:12px;width:40%"></div>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Anggota Tim</span>
+        <a href="/imd-toolkit/#team" class="btn btn-ghost btn-sm">Kelola →</a>
+      </div>
+      <div class="card-body" id="teamList">
+        <div class="skeleton" style="height:44px;margin-bottom:8px;border-radius:12px"></div>
+        <div class="skeleton" style="height:44px;border-radius:12px"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 4: Payment History -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Riwayat Pembayaran</span>
+      <a href="/subscribe/payment.html" class="btn btn-ghost btn-sm" id="newPayBtn" style="display:none">+ Bayar Baru</a>
+    </div>
+    <div class="card-body" id="payHistory">
+      <div class="empty">Memuat riwayat...</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-brand">IMD · Ingat Masa Depan</span>
+  <div class="footer-links">
+    <a href="/" class="footer-link">Beranda</a>
+    <a href="/imd-toolkit/" class="footer-link">Toolkit</a>
+    <a href="/subscribe/" class="footer-link">Berlangganan</a>
+    <a href="https://wa.me/6281236689430" target="_blank" class="footer-link">Bantuan</a>
+  </div>
+</footer>
+
+<script src="/platform/imd-platform.js"></script>
+<script>
+const APP_DEFS = [
+  { key:'general', name:'FinanceBook General', icon:'📒', tag:'Semua Bisnis', plans:['starter','pro','business','trial'] },
+  { key:'fnb',     name:'FinanceBook F&B',     icon:'🍽️', tag:'Restoran & Kafe',   plans:['pro','business'] },
+  { key:'retail',  name:'FinanceBook Retail',  icon:'🛒', tag:'Toko & Retail',     plans:['pro','business'] },
+];
+const AV_COLORS = ['#00897B','#00B8D9','#D4A847','#7B61FF','#FF6B6B'];
+
+function getColor(str) {
+  let h = 0;
+  for (let c of str) h = (h * 31 + c.charCodeAt(0)) & 0xFFFF;
+  return AV_COLORS[h % AV_COLORS.length];
+}
+
+function initials(name) {
+  return (name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function escH(s) { return IMD.U.escHtml(s); }
+
+// ── RENDER SUBSCRIPTION ──────────────────────────────────────
+function renderSub(sub) {
+  const wrap = document.getElementById('subStatus');
+
+  const statusMap = {
+    TRIAL:   { cls: 'badge-trial',   icon: '🎯', label: 'Trial Gratis' },
+    ACTIVE:  { cls: 'badge-active',  icon: '✅', label: 'Aktif' },
+    PENDING: { cls: 'badge-pending', icon: '⏳', label: 'Menunggu Verifikasi' },
+    EXPIRED: { cls: 'badge-expired', icon: '📅', label: 'Kadaluarsa' },
+    NONE:    { cls: 'badge-none',    icon: '🔒', label: 'Belum Berlangganan' },
+  };
+
+  const st = statusMap[sub.status] || statusMap.NONE;
+  let planLabel = '—';
+  let detail    = '';
+  let daysLeft  = null;
+
+  if (sub.status === 'TRIAL') {
+    const days = IMD.Sub.trialDaysLeft(sub);
+    planLabel = `Trial 7 Hari`;
+    detail    = `Akses FinanceBook General. Berakhir ${IMD.U.fmtDateShort(sub.trial_ends_at)}.`;
+    daysLeft  = days;
+
+    // Trial progress bar
+    const elapsed  = 7 - days;
+    const pct      = Math.max(5, Math.round((days / 7) * 100));
+    document.getElementById('trialBarWrap').style.display = '';
+    document.getElementById('trialBarLabel').textContent  = `${days} dari 7 hari tersisa`;
+    document.getElementById('trialBarFill').style.width   = pct + '%';
+
+    // Alert bar
+    const bar = document.getElementById('alertBar');
+    if (days <= 3) {
+      bar.style.display = '';
+      bar.innerHTML = `<div class="alert-bar alert-warning">
+        ⚠️ &nbsp;Trial kamu berakhir dalam <strong>${days} hari</strong>. 
+        <a href="/subscribe/">Berlangganan sekarang</a> untuk tidak kehilangan akses.
+      </div>`;
+    } else {
+      bar.style.display = '';
+      bar.innerHTML = `<div class="alert-bar alert-trial">
+        🎯 &nbsp;Kamu sedang dalam masa trial gratis (<strong>${days} hari</strong> tersisa). 
+        <a href="/subscribe/">Lihat paket berlangganan →</a>
+      </div>`;
+    }
+
+    document.getElementById('statDaysLeft').textContent = days;
+
+  } else if (sub.status === 'ACTIVE') {
+    const cfg  = IMD.Config.get();
+    const plan = cfg?.platform?.subscription_plans?.find(p => p.id === sub.plan);
+    planLabel  = plan ? `Paket ${plan.name}` : 'Aktif';
+    detail     = `Diaktifkan ${IMD.U.fmtDateShort(sub.activated_at)}.`;
+    document.getElementById('statDaysLeft').textContent = '∞';
+  } else if (sub.status === 'PENDING') {
+    planLabel = 'Menunggu Konfirmasi';
+    detail    = 'Pembayaran kamu sedang diverifikasi admin. Estimasi 1×24 jam kerja.';
+    document.getElementById('statDaysLeft').textContent = '—';
+    document.getElementById('newPayBtn').style.display = '';
+  } else {
+    planLabel = sub.status === 'EXPIRED' ? 'Langganan Berakhir' : 'Belum Berlangganan';
+    detail    = 'Pilih paket untuk mengakses FinanceBook.';
+    document.getElementById('upgradeBtn').style.display = '';
+    document.getElementById('newPayBtn').style.display = '';
+    document.getElementById('statDaysLeft').textContent = '0';
+  }
+
+  wrap.innerHTML = `
+    <div class="sub-icon">${st.icon}</div>
+    <div class="sub-info">
+      <div class="sub-badge ${st.cls}"><div class="badge-dot"></div>${st.label}</div>
+      <div class="sub-plan">${escH(planLabel)}</div>
+      <div class="sub-detail">${escH(detail)}</div>
+    </div>`;
+}
+
+// ── RENDER APPS ──────────────────────────────────────────────
+function renderApps(allowedApps) {
+  const grid = document.getElementById('appGrid');
+  grid.innerHTML = APP_DEFS.map(app => {
+    const allowed = allowedApps.includes(app.key);
+    const url     = `/imd-toolkit/launcher.html?app=${app.key}`;
+    return `<a href="${allowed ? url : '#'}" 
+      class="app-btn ${allowed ? '' : 'locked'}"
+      title="${allowed ? 'Buka ' + app.name : 'Tidak termasuk dalam paket kamu'}">
+      ${allowed ? '<span class="app-trial-tag" style="display:none">TRIAL</span>' : '<span class="app-lock">🔒</span>'}
+      <div class="app-btn-icon">${app.icon}</div>
+      <div class="app-btn-name">${app.name}</div>
+      <div class="app-btn-tag">${app.tag}</div>
+    </a>`;
+  }).join('');
+
+  // Mark trial apps
+  if (allowedApps.includes('general') && !allowedApps.includes('fnb')) {
+    const firstBtn = grid.querySelector('.app-btn:not(.locked) .app-trial-tag');
+    if (firstBtn) firstBtn.style.display = '';
+  }
+}
+
+// ── RENDER COMPANY ───────────────────────────────────────────
+function renderCompany(company) {
+  const box = document.getElementById('companyInfo');
+  if (!company) { box.innerHTML = '<div class="empty">Data perusahaan tidak ditemukan.</div>'; return; }
+  box.innerHTML = `
+    <div class="info-row">
+      <div class="info-icon">🏢</div>
+      <div><div class="info-label">Nama Perusahaan</div><div class="info-val">${escH(company.name)}</div></div>
+    </div>
+    <div class="info-row">
+      <div class="info-icon">📧</div>
+      <div><div class="info-label">Email Owner</div><div class="info-val">${escH(company.owner_email)}</div></div>
+    </div>
+    <div class="info-row">
+      <div class="info-icon">🏭</div>
+      <div><div class="info-label">Industri</div><div class="info-val">${escH(company.industry) || '—'}</div></div>
+    </div>
+    <div class="info-row" style="margin-bottom:0">
+      <div class="info-icon">📅</div>
+      <div><div class="info-label">Bergabung</div><div class="info-val">${IMD.U.fmtDateShort(company.created_at)}</div></div>
+    </div>`;
+}
+
+// ── RENDER TEAM ──────────────────────────────────────────────
+function renderTeam(members) {
+  const box = document.getElementById('teamList');
+  document.getElementById('statMembers').textContent = members.length;
+  if (!members.length) { box.innerHTML = '<div class="empty">Belum ada anggota tim.</div>'; return; }
+  box.innerHTML = members.map(m => `
+    <div class="team-member">
+      <div class="team-av" style="background:${getColor(m.email)}">${initials(m.name)}</div>
+      <div style="flex:1;overflow:hidden">
+        <div class="team-name">${escH(m.name)}</div>
+        <div class="team-email">${escH(m.email)}</div>
+      </div>
+      <div class="role-badge ${m.role === 'owner' ? 'owner' : ''}">${escH(m.role)}</div>
+    </div>`).join('');
+}
+
+// ── RENDER PAYMENTS ──────────────────────────────────────────
+function renderPayments(requests) {
+  const box = document.getElementById('payHistory');
+  document.getElementById('statPayments').textContent = requests.length;
+  if (!requests.length) {
+    box.innerHTML = '<div class="empty">Belum ada riwayat pembayaran.</div>';
+    return;
+  }
+  const sorted = [...requests].sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+  box.innerHTML = sorted.map(p => {
+    const stClass = p.status === 'APPROVED' ? 's-approved' : p.status === 'PENDING' ? 's-pending' : 's-rejected';
+    const stLabel = p.status === 'APPROVED' ? 'Lunas' : p.status === 'PENDING' ? 'Menunggu' : 'Ditolak';
+    return `
+      <div class="pay-row">
+        <div style="flex:1">
+          <div class="pay-plan">Paket ${escH(p.plan_name || p.plan)}</div>
+          <div class="pay-date">${IMD.U.fmtDate(p.submitted_at)}</div>
+        </div>
+        <div class="pay-amount">${IMD.U.fmtCurrency(p.amount)}</div>
+        <div class="status-pill ${stClass}">${stLabel}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── MAIN INIT ────────────────────────────────────────────────
+async function init() {
+  // Auth check
+  if (!IMD.Auth.isLoggedIn()) {
+    IMD.U.redirect('/auth/login.html?redirect=' + encodeURIComponent(location.href));
+    return;
+  }
+
+  const session = IMD.Auth.getSession();
+
+  // Set UI basics
+  document.getElementById('greetName').textContent    = session.name || 'Pengguna';
+  document.getElementById('userAv').textContent       = initials(session.name);
+  document.getElementById('userName').textContent     = session.name || '—';
+
+  if (!IMD.Store.isConfigured()) {
+    document.getElementById('subStatus').innerHTML =
+      '<div class="sub-icon">⚙️</div><div class="sub-info"><div class="sub-plan">Platform belum dikonfigurasi</div><div class="sub-detail">Hubungi admin IMD.</div></div>';
+    return;
+  }
+
+  try {
+    const data = await IMD.Store.get(true);
+    const company = data.companies.find(c => c.id === session.company_id);
+
+    document.getElementById('greetCompany').textContent =
+      company ? `${company.name} · ${company.owner_email}` : session.email;
+
+    // Subscription
+    const sub  = data.subscriptions.find(s => s.company_id === session.company_id) || { status: 'NONE' };
+    const apps = IMD.Sub.allowedApps(sub);
+
+    renderSub(sub);
+    renderApps(apps);
+    renderCompany(company);
+
+    // Team
+    const memberIds = data.team_members.filter(m => m.company_id === session.company_id).map(m => m.user_id);
+    const members   = data.users.filter(u => memberIds.includes(u.id) || u.company_id === session.company_id);
+    renderTeam(members);
+
+    // Payments
+    const payments = data.payment_requests.filter(p => p.company_id === session.company_id);
+    renderPayments(payments);
+
+  } catch (e) {
+    console.error('Dashboard load error:', e);
+    document.getElementById('subStatus').innerHTML =
+      `<div class="sub-icon">⚠️</div><div class="sub-info"><div class="sub-plan">Gagal memuat data</div><div class="sub-detail">${escH(e.message)}</div></div>`;
+  }
+}
+
+function doLogout() {
+  if (confirm('Yakin ingin logout?')) {
+    IMD.Auth.logout();
+    location.replace('/auth/login.html');
+  }
+}
+
+IMD.init().then(init).catch(e => {
+  console.error(e);
+  document.getElementById('greetName').textContent = 'Error memuat platform';
+});
+</script>
+</body>
+</html>

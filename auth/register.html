@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Akun · IMD Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080C12;--bg2:#0D1117;--cy:#00D4FF;--cy2:#00B8D9;--teal:#00897B;--gold:#D4A847;--gold2:#F5CC6B;--am:#FFD740;--gl:rgba(0,212,255,0.04);--gl2:rgba(0,212,255,0.07);--gb:rgba(0,212,255,0.09);--gb2:rgba(0,212,255,0.18);--gld:rgba(212,168,71,0.08);--gldb:rgba(212,168,71,0.2);--t:#E8F4F8;--t2:#9DB8C8;--t3:#4A6070;--gn:#00E676;--rd:#FF5252;--r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;}
+*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;}
+.canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}.canvas::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 5% 15%,rgba(212,168,71,0.04) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 95% 85%,rgba(0,137,123,0.06) 0%,transparent 55%);}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:drift 28s linear infinite;}.o1{width:500px;height:500px;background:rgba(212,168,71,0.04);top:-100px;left:-100px;}.o2{width:400px;height:400px;background:rgba(0,137,123,0.05);bottom:-80px;right:-80px;animation-direction:reverse;}
+@keyframes drift{0%{transform:translate(0,0);}50%{transform:translate(20px,-15px);}100%{transform:translate(0,0);}}
+.page{position:relative;z-index:10;min-height:100vh;}
+.top-bar{padding:14px 28px;border-bottom:1px solid var(--gb);display:flex;align-items:center;gap:12px;background:rgba(8,12,18,0.8);backdrop-filter:blur(16px);}
+.top-bar-brand{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.top-bar-sep,.top-bar-cur{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--t3);}
+.top-bar-right{margin-left:auto;display:flex;gap:8px;}
+.top-bar-link{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-decoration:none;transition:color 0.2s;}
+.top-bar-link:hover{color:var(--gold);}
+.centered{max-width:500px;margin:auto;padding:60px 28px;}
+.card{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r24);padding:40px 36px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.card-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;}
+.card-sub{font-size:0.82rem;color:var(--t2);margin-bottom:32px;line-height:1.6;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.field label{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.field input,.field select{background:rgba(0,0,0,0.3);border:1px solid var(--gb);border-radius:var(--r12);padding:12px 14px;font-size:0.88rem;color:var(--t);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;outline:none;width:100%;}
+.field input:focus,.field select:focus{border-color:var(--gold);}
+.field input::placeholder{color:var(--t3);}
+.field-hint{font-size:0.72rem;color:var(--t3);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--r12);padding:13px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;text-decoration:none;border:none;width:100%;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;}
+.btn-gold:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--gb2);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none !important;}
+.alert{padding:12px 16px;border-radius:var(--r12);font-size:0.82rem;margin-bottom:16px;display:none;}
+.alert.show{display:flex;align-items:center;gap:10px;}
+.alert-err{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.25);color:#FF8A80;}
+.alert-ok{background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:var(--gn);}
+.divider-text{display:flex;align-items:center;gap:12px;margin:20px 0;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.divider-text::before,.divider-text::after{content:'';flex:1;height:1px;background:var(--gb);}
+.link-sm{font-size:0.8rem;color:var(--t2);text-decoration:none;transition:color 0.2s;}.link-sm:hover{color:var(--gold);}
+.spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.2);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.centered{padding:40px 16px;}.card{padding:28px 20px;}.row2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="canvas"><div class="orb o1"></div><div class="orb o2"></div></div>
+<div class="page">
+
+  <div class="top-bar">
+    <a href="/" class="top-bar-brand">IMD · Ingat Masa Depan</a>
+    <span class="top-bar-sep">›</span>
+    <span class="top-bar-cur">Daftar Akun</span>
+    <div class="top-bar-right">
+      <a href="/auth/login.html" class="top-bar-link">Sudah punya akun? Login</a>
+    </div>
+  </div>
+
+  <div class="centered">
+    <div class="card">
+      <div class="card-title">Buat Akun</div>
+      <div class="card-sub">Daftarkan bisnis kamu ke IMD Platform. Setelah daftar, pilih paket dan aktifkan langganan.</div>
+
+      <div class="alert alert-err" id="alertErr">⚠ <span id="errMsg"></span></div>
+      <div class="alert alert-ok"  id="alertOk">✓ <span id="okMsg"></span></div>
+
+      <div class="field">
+        <label>Nama Bisnis / Perusahaan *</label>
+        <input type="text" id="company_name" maxlength="100" placeholder="PT Berkah Makmur / Toko Maju Jaya">
+      </div>
+
+      <div class="field">
+        <label>Email *</label>
+        <input type="email" id="email" maxlength="254" placeholder="nama@perusahaan.com" autocomplete="email">
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Password *</label>
+          <input type="password" id="password" maxlength="128" placeholder="Min 8 karakter" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label>Konfirmasi Password *</label>
+          <input type="password" id="password2" maxlength="128" placeholder="Ulangi password" autocomplete="new-password">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Industri</label>
+        <select id="industry">
+          <option value="">-- Pilih Industri --</option>
+          <option value="fnb">F&B (Restoran / Kafe / Warung)</option>
+          <option value="retail">Retail (Toko / Distributor / Grosir)</option>
+          <option value="services">Jasa / Services</option>
+          <option value="manufacturing">Manufaktur</option>
+          <option value="hospitality">Hospitality (Hotel / Villa)</option>
+          <option value="other">Lainnya</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px;padding:14px 16px;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:var(--r12);">
+        <p style="font-size:0.78rem;color:var(--cy2);font-weight:700;margin-bottom:4px;">🎯 7 Hari Trial Gratis</p>
+        <p style="font-size:0.78rem;color:var(--t2);line-height:1.7;">
+          Setelah daftar, kamu langsung dapat akses <strong style="color:var(--t)">FinanceBook General</strong> secara gratis selama 7 hari. Tidak perlu kartu kredit.
+        </p>
+      </div>
+
+      <button class="btn btn-gold" id="btnReg" onclick="doRegister()">
+        <span id="btnText">Buat Akun</span>
+        <span class="spinner" id="spinner" style="display:none"></span>
+      </button>
+
+      <div class="divider-text">sudah punya akun?</div>
+      <a href="/auth/login.html" class="btn btn-ghost">Masuk</a>
+    </div>
+  </div>
+
+</div>
+
+<footer style="border-top:1px solid rgba(0,212,255,0.09);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:10;">
+  <span style="font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;background:linear-gradient(135deg,#F5CC6B,#D4A847);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">IMD · Ingat Masa Depan</span>
+  <div style="display:flex;gap:20px;">
+    <a href="/" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--t3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Beranda</a>
+    <a href="/subscribe/" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--t3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Paket</a>
+    <a href="https://wa.me/6281236689430" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--t3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Bantuan</a>
+  </div>
+</footer>
+<script src="/platform/imd-platform.js"></script>
+<script>
+IMD.init().then(() => {
+  if(IMD.Auth.isLoggedIn()) IMD.U.redirect('/subscribe/index.html');
+  if(!IMD.Store.isConfigured()) {
+    showErr('Platform belum dikonfigurasi. Hubungi admin IMD untuk setup platform.');
+    document.getElementById('btnReg').disabled = true;
+  }
+});
+
+function showErr(msg){ document.getElementById('errMsg').textContent=msg; document.getElementById('alertErr').classList.add('show'); }
+function showOk(msg){  document.getElementById('okMsg').textContent=msg;  document.getElementById('alertOk').classList.add('show'); }
+
+async function doRegister() {
+  const companyName = document.getElementById('company_name').value.trim();
+  const email       = document.getElementById('email').value.trim();
+  const password    = document.getElementById('password').value;
+  const password2   = document.getElementById('password2').value;
+  const industry    = document.getElementById('industry').value;
+
+  document.getElementById('alertErr').classList.remove('show');
+  document.getElementById('alertOk').classList.remove('show');
+
+  if(!companyName) return showErr('Nama bisnis wajib diisi.');
+  if(!email)       return showErr('Email wajib diisi.');
+  if(password.length < 8) return showErr('Password minimal 8 karakter.');
+  if(password !== password2) return showErr('Konfirmasi password tidak cocok.');
+
+  const btn=document.getElementById('btnReg');
+  btn.disabled=true;
+  document.getElementById('spinner').style.display='block';
+  document.getElementById('btnText').textContent='Memproses...';
+
+  try {
+    const result = await IMD.Auth.register(email, password, companyName);
+    // Update industry
+    if(industry) {
+      await IMD.Store.update(data => {
+        const co = data.companies.find(c=>c.id===result.company.id);
+        if(co) co.industry = industry;
+        return data;
+      });
+    }
+    showOk('Akun berhasil dibuat! Kamu mendapat trial 7 hari gratis. Mengalihkan...');
+    setTimeout(() => IMD.U.redirect('/dashboard/'), 1800);
+  } catch(e) {
+    showErr(e.message);
+    btn.disabled=false;
+    document.getElementById('spinner').style.display='none';
+    document.getElementById('btnText').textContent='Buat Akun';
+  }
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
+</script>
+</body>
+</html>

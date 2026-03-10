@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMD · Ingat Masa Depan — Platform Bisnis Indonesia</title>
+<meta name="description" content="IMD menghadirkan Tools, Academy, dan Consulting untuk bisnis Indonesia. FinanceBook — akuntansi lengkap, PPh21 TER 2024, dan payroll BPJS langsung di browser.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080C12;--bg2:#0D1117;--bg3:#111820;
+  --cy:#00D4FF;--cy2:#00B8D9;--cy3:#B3F0FF;
+  --teal:#00897B;--teal2:#4DB6AC;
+  --gold:#D4A847;--gold2:#F5CC6B;--am:#FFD740;
+  --purple:#7C4DFF;--orange:#FF9100;
+  --gl:rgba(0,212,255,0.04);--gl2:rgba(0,212,255,0.07);
+  --gb:rgba(0,212,255,0.09);--gb2:rgba(0,212,255,0.18);
+  --gld:rgba(212,168,71,0.08);--gldb:rgba(212,168,71,0.2);
+  --t:#E8F4F8;--t2:#9DB8C8;--t3:#4A6070;
+  --gn:#00E676;--rd:#FF5252;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;
+  --nav-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);overflow-x:hidden;line-height:1.6;}
+
+/* BG */
+.canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.canvas::before{content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 5% 15%,rgba(212,168,71,0.055) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 95% 85%,rgba(0,137,123,0.08) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 55% 50%,rgba(0,212,255,0.04) 0%,transparent 55%);}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);animation:drift linear infinite;}
+.o1{width:700px;height:700px;background:rgba(212,168,71,0.045);top:-200px;left:-200px;animation-duration:32s;}
+.o2{width:500px;height:500px;background:rgba(0,137,123,0.065);bottom:-100px;right:-150px;animation-duration:26s;animation-direction:reverse;}
+.o3{width:350px;height:350px;background:rgba(0,212,255,0.035);top:45%;left:55%;animation-duration:21s;}
+@keyframes drift{0%{transform:translate(0,0);}50%{transform:translate(28px,-18px);}100%{transform:translate(0,0);}}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+  background-size:60px 60px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);
+  border-bottom:1px solid var(--gb);backdrop-filter:blur(24px) saturate(1.4);
+  background:rgba(8,12,18,0.88);}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 28px;height:100%;display:flex;align-items:center;}
+.nav-brand{display:flex;flex-direction:column;gap:1px;text-decoration:none;margin-right:40px;flex-shrink:0;}
+.nav-brand-main{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;letter-spacing:-0.3px;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-brand-sub{font-family:'JetBrains Mono',monospace;font-size:0.45rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);}
+.nav-links{display:flex;align-items:center;gap:4px;flex:1;}
+.nav-link{font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;color:var(--t2);
+  text-decoration:none;padding:6px 12px;border-radius:var(--r8);transition:all 0.2s;letter-spacing:0.2px;}
+.nav-link:hover{color:var(--t);background:var(--gl2);}
+.nav-link.active{color:var(--gold);background:var(--gld);}
+.nav-link.tools-link::after{content:' ↗';font-size:0.7rem;opacity:0.5;}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.lang-switch{display:flex;align-items:center;background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.12);border-radius:30px;padding:3px;position:relative;cursor:pointer;}
+.lang-switch-thumb{position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);
+  background:linear-gradient(135deg,var(--cy2),var(--teal));border-radius:24px;
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 8px rgba(0,212,255,0.3);z-index:0;}
+.lang-switch-thumb.en{transform:translateX(100%);}
+.lang-switch-opt{position:relative;z-index:1;font-family:'JetBrains Mono',monospace;font-size:0.58rem;font-weight:700;
+  letter-spacing:1.5px;padding:4px 10px;color:rgba(255,255,255,0.4);transition:color 0.3s;user-select:none;}
+.lang-switch-opt.active{color:#fff;}
+.nav-cta{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;border:none;
+  border-radius:var(--r20);padding:8px 20px;font-family:'Syne',sans-serif;font-weight:700;
+  font-size:0.78rem;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.nav-cta:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,71,0.3);}
+.nav-mobile-toggle{display:none;background:var(--gl2);border:1px solid var(--gb);
+  border-radius:var(--r8);padding:8px 10px;cursor:pointer;color:var(--t2);font-size:1rem;}
+@media(max-width:900px){.nav-links{display:none;}.nav-mobile-toggle{display:flex;}}
+.mobile-menu{display:none;position:fixed;top:var(--nav-h);left:0;right:0;z-index:199;
+  background:rgba(8,12,18,0.97);border-bottom:1px solid var(--gb);backdrop-filter:blur(24px);
+  padding:16px 28px;flex-direction:column;gap:4px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu .nav-link{padding:10px 12px;font-size:0.9rem;}
+.mobile-menu .nav-cta{margin-top:8px;justify-content:center;}
+
+/* LAYOUT */
+.page{position:relative;z-index:10;}
+section{padding:96px 28px;}
+.inner{max-width:1200px;margin:0 auto;}
+.inner-sm{max-width:800px;margin:0 auto;}
+.inner-md{max-width:1000px;margin:0 auto;}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:4px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;}
+.eyebrow::after{content:'';flex:0 0 50px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+.eyebrow.cy{color:var(--cy);}
+.eyebrow.cy::after{background:linear-gradient(90deg,var(--cy),transparent);}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;
+  letter-spacing:-1px;line-height:1.15;margin-bottom:14px;color:var(--t);}
+.section-desc{font-size:0.9rem;color:var(--t2);line-height:1.85;max-width:520px;}
+.divider{max-width:1200px;margin:0 auto;padding:0 28px;}
+.divider-line{height:1px;background:linear-gradient(90deg,transparent,var(--gb2),transparent);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r12);
+  padding:13px 26px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;
+  cursor:pointer;letter-spacing:0.4px;transition:all 0.22s;text-decoration:none;border:none;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;}
+.btn-gold:hover{opacity:0.9;transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,168,71,0.28);}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--gb2);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px);}
+.btn-cy{background:linear-gradient(135deg,var(--cy2),var(--teal));color:#fff;}
+.btn-cy:hover{opacity:0.9;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,212,255,0.2);}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:calc(var(--nav-h) + 60px) 28px 80px;text-align:center;}
+.hero-inner{max-width:860px;}
+.hero-label{display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);
+  background:rgba(0,0,0,0.4);border:1px solid var(--gb);border-radius:30px;padding:6px 14px;margin-bottom:28px;}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--gn);animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:0.5;transform:scale(0.9);}50%{opacity:1;transform:scale(1.1);}}
+.hero-brand{font-family:'Syne',sans-serif;font-size:clamp(3rem,10vw,6.5rem);font-weight:800;
+  letter-spacing:-3px;line-height:0.9;margin-bottom:10px;
+  background:linear-gradient(135deg,#fff 0%,var(--gold2) 45%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-tagline{font-family:'JetBrains Mono',monospace;font-size:clamp(0.65rem,1.8vw,0.85rem);
+  letter-spacing:5px;text-transform:uppercase;color:var(--t3);margin-bottom:36px;}
+.hero-desc{font-size:clamp(0.95rem,2.2vw,1.15rem);color:var(--t2);line-height:1.85;
+  margin-bottom:44px;max-width:600px;margin-left:auto;margin-right:auto;}
+.hero-desc strong{color:var(--t);font-weight:500;}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.hero-trust{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);}
+.hero-scroll{margin-top:60px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);}
+.scroll-line{width:1px;height:40px;background:linear-gradient(180deg,var(--gold),transparent);animation:scrollPulse 2s ease infinite;}
+@keyframes scrollPulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
+
+/* FINANCEBOOK SUITE */
+.fb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:52px;}
+.fb-card{position:relative;background:var(--gl);border:1px solid var(--gb);
+  border-radius:var(--r24);padding:32px 28px;overflow:hidden;display:flex;flex-direction:column;
+  transition:all 0.3s;text-decoration:none;color:inherit;}
+.fb-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;transition:opacity 0.3s;opacity:0;}
+.fb-card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.fb-card:hover::before{opacity:1;}
+.fb-card.general::before{background:linear-gradient(90deg,transparent,var(--cy),transparent);}
+.fb-card.general:hover{border-color:rgba(0,212,255,0.3);}
+.fb-card.fnb::before{background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+.fb-card.fnb:hover{border-color:rgba(255,145,0,0.3);}
+.fb-card.retail::before{background:linear-gradient(90deg,transparent,var(--purple),transparent);}
+.fb-card.retail:hover{border-color:rgba(124,77,255,0.3);}
+.fb-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;}
+.fb-icon{width:52px;height:52px;border-radius:var(--r16);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
+.fb-card.general .fb-icon{background:rgba(0,212,255,0.1);}
+.fb-card.fnb     .fb-icon{background:rgba(255,145,0,0.1);}
+.fb-card.retail  .fb-icon{background:rgba(124,77,255,0.1);}
+.fb-badge{font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid;font-weight:700;}
+.fb-badge.live{color:var(--gn);border-color:rgba(0,230,118,0.3);background:rgba(0,230,118,0.08);}
+.fb-name{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;color:var(--t);margin-bottom:4px;}
+.fb-target{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.fb-card.general .fb-target{color:var(--cy2);}
+.fb-card.fnb     .fb-target{color:var(--orange);}
+.fb-card.retail  .fb-target{color:var(--purple);}
+.fb-desc{font-size:0.82rem;color:var(--t2);line-height:1.8;margin-bottom:20px;flex:1;}
+.fb-features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;}
+.fb-feat{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;padding:3px 9px;border-radius:6px;color:var(--t3);}
+.fb-card.general .fb-feat{background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.1);}
+.fb-card.fnb     .fb-feat{background:rgba(255,145,0,0.05);border:1px solid rgba(255,145,0,0.12);}
+.fb-card.retail  .fb-feat{background:rgba(124,77,255,0.05);border:1px solid rgba(124,77,255,0.12);}
+.fb-cta{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:var(--r12);transition:all 0.2s;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;}
+.fb-card.general .fb-cta{background:rgba(0,212,255,0.08);color:var(--cy);}
+.fb-card.general .fb-cta:hover{background:rgba(0,212,255,0.14);}
+.fb-card.fnb     .fb-cta{background:rgba(255,145,0,0.08);color:var(--orange);}
+.fb-card.fnb     .fb-cta:hover{background:rgba(255,145,0,0.14);}
+.fb-card.retail  .fb-cta{background:rgba(124,77,255,0.08);color:var(--purple);}
+.fb-card.retail  .fb-cta:hover{background:rgba(124,77,255,0.14);}
+.fb-cta-arrow{transition:transform 0.2s;}
+.fb-card:hover .fb-cta-arrow{transform:translateX(4px);}
+.fb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:40px;border:1px solid var(--gb);border-radius:var(--r20);background:var(--gl);overflow:hidden;}
+.fb-stat{padding:20px 24px;display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--gb);}
+.fb-stat:last-child{border-right:none;}
+.fb-stat-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.fb-stat-lbl{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.fb-stat-sub{font-size:0.72rem;color:var(--t3);margin-top:2px;}
+
+/* PILLARS */
+#platform{background:var(--bg2);border-top:1px solid var(--gb);border-bottom:1px solid var(--gb);}
+.pillars-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:52px;}
+.pillar-card{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r20);
+  padding:32px 28px;position:relative;overflow:hidden;transition:all 0.3s;}
+.pillar-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;}
+.pillar-card.tools::before{background:linear-gradient(180deg,var(--cy),var(--teal));}
+.pillar-card.academy::before{background:linear-gradient(180deg,var(--gold),var(--am));}
+.pillar-card.consulting::before{background:linear-gradient(180deg,var(--purple),var(--cy2));}
+.pillar-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,0.4);}
+.pillar-icon{font-size:2.4rem;margin-bottom:16px;}
+.pillar-name{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:6px;}
+.pillar-label{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.pillar-card.tools    .pillar-label{color:var(--cy);}
+.pillar-card.academy  .pillar-label{color:var(--gold);}
+.pillar-card.consulting .pillar-label{color:var(--purple);}
+.pillar-desc{font-size:0.83rem;color:var(--t2);line-height:1.8;margin-bottom:20px;}
+.pillar-items{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
+.pillar-item{font-size:0.78rem;color:var(--t3);display:flex;align-items:center;gap:8px;}
+.pillar-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.pillar-card.tools    .pillar-dot{background:var(--cy);}
+.pillar-card.academy  .pillar-dot{background:var(--gold);}
+.pillar-card.consulting .pillar-dot{background:var(--purple);}
+.pillar-status{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border-radius:20px;display:inline-block;}
+.s-live{color:var(--gn);border:1px solid rgba(0,230,118,0.3);background:rgba(0,230,118,0.08);}
+.s-soon{color:var(--am);border:1px solid rgba(255,215,64,0.2);background:rgba(255,215,64,0.06);}
+
+/* HOW IT WORKS */
+#how{text-align:center;}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:56px;position:relative;}
+.how-grid::before{content:'';position:absolute;top:36px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gb2),transparent);z-index:0;}
+.how-step{position:relative;z-index:1;padding:0 24px;text-align:center;}
+.how-num{width:72px;height:72px;border-radius:50%;border:1px solid var(--gb2);background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;
+  color:var(--gold);margin:0 auto 20px;position:relative;}
+.how-num::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px dashed rgba(212,168,71,0.2);}
+.how-step-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--t);margin-bottom:8px;}
+.how-step-desc{font-size:0.8rem;color:var(--t2);line-height:1.8;}
+.how-highlight{display:inline-flex;align-items:center;gap:8px;margin-top:40px;
+  background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.2);border-radius:var(--r12);
+  padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--gn);}
+
+/* PRICING */
+#pricing{background:var(--bg2);border-top:1px solid var(--gb);border-bottom:1px solid var(--gb);}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;align-items:start;}
+.price-card{background:var(--gl);border:1px solid var(--gb);border-radius:var(--r20);padding:28px 26px;position:relative;transition:all 0.3s;}
+.price-card.featured{background:linear-gradient(135deg,rgba(212,168,71,0.07),rgba(0,137,123,0.05));border-color:rgba(212,168,71,0.3);transform:translateY(-8px);}
+.price-card.featured::before{content:'Paling Populer';position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:2px;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;padding:4px 14px;border-radius:0 0 10px 10px;font-weight:700;}
+.price-card:hover:not(.featured){transform:translateY(-3px);border-color:var(--gb2);}
+.price-tier{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+.price-val{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:var(--t);margin-bottom:4px;display:flex;align-items:flex-start;gap:4px;line-height:1;}
+.price-curr{font-size:0.9rem;font-weight:600;color:var(--t2);margin-top:6px;}
+.price-period{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1px;color:var(--t3);margin-bottom:6px;}
+.price-target{font-size:0.78rem;color:var(--t2);margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gb);}
+.price-features{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.price-feat{font-size:0.78rem;color:var(--t2);display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.pfc{color:var(--gn);font-size:0.85rem;flex-shrink:0;margin-top:1px;}
+.pfx{color:var(--t3);font-size:0.85rem;flex-shrink:0;margin-top:1px;}
+.price-btn{width:100%;padding:12px;border-radius:var(--r12);font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.2s;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;border:none;}
+.pbg{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;}
+.pbg:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,71,0.3);}
+.pbq{background:transparent;color:var(--t2);border:1px solid var(--gb2);}
+.pbq:hover{border-color:var(--gold);color:var(--gold);}
+.pricing-note{text-align:center;margin-top:28px;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+
+/* FAQ */
+.faq-grid{margin-top:52px;display:flex;flex-direction:column;gap:2px;max-width:760px;margin-left:auto;margin-right:auto;}
+.faq-item{border:1px solid var(--gb);border-radius:var(--r16);overflow:hidden;transition:border-color 0.2s;}
+.faq-item.open{border-color:rgba(212,168,71,0.3);}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;cursor:pointer;transition:background 0.2s;}
+.faq-q:hover{background:var(--gl);}
+.faq-q-text{font-size:0.88rem;font-weight:500;color:var(--t);}
+.faq-chevron{width:20px;height:20px;border-radius:50%;background:var(--gl2);border:1px solid var(--gb);
+  display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--t3);transition:all 0.25s;flex-shrink:0;}
+.faq-item.open .faq-chevron{background:var(--gld);border-color:var(--gold);color:var(--gold);transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;}
+.faq-item.open .faq-a{max-height:300px;padding:0 22px 18px;}
+.faq-a-text{font-size:0.82rem;color:var(--t2);line-height:1.85;padding-top:12px;border-top:1px solid var(--gb);}
+.faq-a-text strong{color:var(--gold);font-weight:500;}
+
+/* ABOUT */
+#about{background:var(--bg2);border-top:1px solid var(--gb);}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:52px;}
+@media(max-width:720px){.about-grid{grid-template-columns:1fr;gap:32px;}}
+.about-badge{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--gld),rgba(0,137,123,0.06));border:1px solid var(--gldb);border-radius:var(--r16);padding:18px 22px;margin-bottom:24px;}
+.about-avatar{width:46px;height:46px;border-radius:var(--r12);background:linear-gradient(135deg,var(--gold),var(--am));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#0A0A2A;flex-shrink:0;}
+.about-name{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--t);}
+.about-loc{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+.about-body{font-size:0.85rem;color:var(--t2);line-height:1.9;margin-bottom:20px;}
+.about-quote{font-size:0.88rem;color:var(--t2);line-height:1.9;font-style:italic;border-left:2px solid var(--gold);padding-left:16px;}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.about-stat{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r16);padding:20px 18px;}
+.about-stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.about-stat-lbl{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:4px;}
+.about-stat-note{font-size:0.72rem;color:var(--t3);margin-top:4px;}
+
+/* CTA */
+#cta{text-align:center;}
+.cta-box{background:linear-gradient(135deg,rgba(212,168,71,0.06),rgba(0,137,123,0.06),rgba(0,212,255,0.04));
+  border:1px solid rgba(212,168,71,0.2);border-radius:var(--r24);padding:72px 48px;position:relative;overflow:hidden;}
+.cta-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.cta-orb{position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(100px);background:rgba(212,168,71,0.05);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.cta-title{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-0.5px;margin-bottom:14px;position:relative;}
+.cta-desc{font-size:0.9rem;color:var(--t2);line-height:1.85;max-width:480px;margin:0 auto 36px;position:relative;}
+.cta-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;}
+.cta-trust{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:28px;position:relative;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--gb);padding:40px 28px 32px;}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+@media(max-width:768px){.footer-top{grid-template-columns:1fr 1fr;gap:28px;}}
+@media(max-width:480px){.footer-top{grid-template-columns:1fr;}}
+.footer-brand-main{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.footer-brand-sub{font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;}
+.footer-brand-desc{font-size:0.78rem;color:var(--t3);line-height:1.8;max-width:240px;}
+.footer-col-title{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px;}
+.footer-links-col{display:flex;flex-direction:column;gap:8px;}
+.footer-link{font-size:0.8rem;color:var(--t2);text-decoration:none;transition:color 0.2s;}
+.footer-link:hover{color:var(--gold);}
+.flb{font-family:'JetBrains Mono',monospace;font-size:0.45rem;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:6px;margin-left:6px;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.25);color:var(--gn);}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-top:24px;border-top:1px solid var(--gb);}
+.footer-copy{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:1px;color:var(--t3);}
+
+/* ANIMS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fu{opacity:0;animation:fadeUp 0.65s ease forwards;}
+.d1{animation-delay:0.1s}.d2{animation-delay:0.2s}.d3{animation-delay:0.3s}
+.d4{animation-delay:0.4s}.d5{animation-delay:0.5s}.d6{animation-delay:0.6s}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:640px){
+  section{padding:72px 20px;}
+  #hero{padding:calc(var(--nav-h)+50px) 20px 60px;}
+  .nav-inner{padding:0 20px;}
+  .cta-box{padding:44px 24px;}
+  .fb-stats{grid-template-columns:1fr 1fr;}
+  .fb-stat{border-right:none;border-bottom:1px solid var(--gb);}
+  .fb-stat:last-child{border-bottom:none;}
+  .how-grid::before{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="canvas"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-main">IMD · Ingat Masa Depan</div>
+      <div class="nav-brand-sub" data-id="Platform Bisnis Indonesia" data-en="Indonesian Business Platform">Platform Bisnis Indonesia</div>
+    </a>
+    <div class="nav-links">
+      <a href="#hero"       class="nav-link active" data-id="Beranda" data-en="Home">Beranda</a>
+      <a href="imd-toolkit/" class="nav-link tools-link" data-id="Tools" data-en="Tools">Tools</a>
+      <a href="#platform"   class="nav-link" data-id="Academy" data-en="Academy">Academy</a>
+      <a href="#platform"   class="nav-link" data-id="Consulting" data-en="Consulting">Consulting</a>
+      <a href="#about"      class="nav-link" data-id="Tentang" data-en="About">Tentang</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-switch" onclick="toggleLang()">
+        <div class="lang-switch-thumb" id="langThumb"></div>
+        <span class="lang-switch-opt active" id="optId">ID</span>
+        <span class="lang-switch-opt" id="optEn">EN</span>
+      </div>
+      <a href="imd-toolkit/" class="nav-cta" data-id="🧰 Buka Toolkit" data-en="🧰 Open Toolkit">🧰 Buka Toolkit</a>
+    </div>
+    <button class="nav-mobile-toggle" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#hero"       class="nav-link" onclick="closeMobileMenu()" data-id="Beranda" data-en="Home">Beranda</a>
+  <a href="imd-toolkit/" class="nav-link tools-link" data-id="Tools → FinanceBook" data-en="Tools → FinanceBook">Tools → FinanceBook</a>
+  <a href="#platform"   class="nav-link" onclick="closeMobileMenu()" data-id="Academy" data-en="Academy">Academy</a>
+  <a href="#platform"   class="nav-link" onclick="closeMobileMenu()" data-id="Consulting" data-en="Consulting">Consulting</a>
+  <a href="#about"      class="nav-link" onclick="closeMobileMenu()" data-id="Tentang" data-en="About">Tentang</a>
+  <a href="imd-toolkit/" class="nav-cta" data-id="🧰 Buka Toolkit" data-en="🧰 Open Toolkit">🧰 Buka Toolkit</a>
+</div>
+
+<div class="page">
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-label fu d1">
+      <span class="hero-dot"></span>
+      <span data-id="Platform Bisnis Indonesia · Aktif 2026" data-en="Indonesian Business Platform · Active 2026">Platform Bisnis Indonesia · Aktif 2026</span>
+    </div>
+    <div class="hero-brand fu d2">IMD</div>
+    <div class="hero-tagline fu d2">Ingat Masa Depan</div>
+    <p class="hero-desc fu d3">
+      <span data-id="Ekosistem bisnis untuk UMKM Indonesia. " data-en="Business ecosystem for Indonesian SMEs. ">Ekosistem bisnis untuk UMKM Indonesia. </span>
+      <strong data-id="FinanceBook" data-en="FinanceBook">FinanceBook</strong>
+      <span data-id=" — akuntansi lengkap, PPh21 TER 2024, payroll BPJS, langsung di browser. Tanpa instalasi." data-en=" — complete accounting, PPh21 TER 2024, BPJS payroll, running in your browser. Zero installation."> — akuntansi lengkap, PPh21 TER 2024, payroll BPJS, langsung di browser. Tanpa instalasi.</span>
+    </p>
+    <div class="hero-actions fu d4">
+      <a href="#financebook" class="btn btn-gold" data-id="🚀 Mulai Pakai FinanceBook" data-en="🚀 Start Using FinanceBook">🚀 Mulai Pakai FinanceBook</a>
+      <a href="#platform"    class="btn btn-ghost" data-id="Lihat Semua Produk" data-en="View All Products">Lihat Semua Produk</a>
+    </div>
+    <div class="hero-trust fu d5">
+      <div class="trust-item">✅ <span data-id="PPh21 TER 2024 · PMK 168/2023" data-en="PPh21 TER 2024 · PMK 168/2023">PPh21 TER 2024 · PMK 168/2023</span></div>
+      <div class="trust-item">🔒 <span data-id="Data tersimpan di browser kamu" data-en="Data saved in your browser">Data tersimpan di browser kamu</span></div>
+      <div class="trust-item">⚡ <span data-id="Zero instalasi" data-en="Zero installation">Zero instalasi</span></div>
+    </div>
+    <div class="hero-scroll fu d6"><div class="scroll-line"></div><span data-id="Scroll untuk explore" data-en="Scroll to explore">Scroll untuk explore</span></div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── FINANCEBOOK SUITE ── -->
+<section id="financebook">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow" data-id="Produk Utama · FinanceBook Suite" data-en="Main Product · FinanceBook Suite">Produk Utama · FinanceBook Suite</div>
+      <h2 class="section-title" data-id="Akuntansi Lengkap untuk Setiap Bisnis" data-en="Complete Accounting for Every Business">Akuntansi Lengkap untuk Setiap Bisnis</h2>
+      <p class="section-desc" data-id="Tiga edisi FinanceBook — masing-masing dirancang khusus untuk jenis bisnisnya. Pilih edisi yang sesuai dan mulai langsung di browser kamu, hari ini." data-en="Three FinanceBook editions — each purpose-built for its business type. Choose yours and start in your browser today.">Tiga edisi FinanceBook — masing-masing dirancang khusus untuk jenis bisnisnya. Pilih edisi yang sesuai dan mulai langsung di browser kamu, hari ini.</p>
+    </div>
+    <div class="fb-grid">
+
+      <div class="fb-card general reveal">
+        <div class="fb-card-header"><div class="fb-icon">📒</div><span class="fb-badge live">● Live</span></div>
+        <div class="fb-name">FinanceBook General</div>
+        <div class="fb-target" data-id="Untuk semua jenis bisnis UMKM" data-en="For all SME business types">Untuk semua jenis bisnis UMKM</div>
+        <p class="fb-desc" data-id="Akuntansi lengkap berbasis Google Sheets. Jurnal umum, invoice, AR/AP, laporan laba rugi, neraca, dan arus kas. Cocok untuk bisnis yang baru mulai membangun sistem keuangan." data-en="Complete accounting powered by Google Sheets. General journal, invoicing, AR/AP, P&L, balance sheet, and cash flow. Ideal for businesses starting to build their financial system.">Akuntansi lengkap berbasis Google Sheets. Jurnal umum, invoice, AR/AP, laporan laba rugi, neraca, dan arus kas. Cocok untuk bisnis yang baru mulai membangun sistem keuangan.</p>
+        <div class="fb-features">
+          <span class="fb-feat">Jurnal Umum</span><span class="fb-feat">Invoice + PPN</span>
+          <span class="fb-feat">AR / AP</span><span class="fb-feat">Laba Rugi</span>
+          <span class="fb-feat">Neraca</span><span class="fb-feat">Arus Kas</span>
+          <span class="fb-feat">COA</span><span class="fb-feat">Google Sheets</span>
+        </div>
+        <a href="imd-toolkit/financebook.html" class="fb-cta">
+          <span data-id="Buka FinanceBook General" data-en="Open FinanceBook General">Buka FinanceBook General</span>
+          <span class="fb-cta-arrow">→</span>
+        </a>
+      </div>
+
+      <div class="fb-card fnb reveal">
+        <div class="fb-card-header"><div class="fb-icon">🍽️</div><span class="fb-badge live">● Live</span></div>
+        <div class="fb-name">FinanceBook F&amp;B</div>
+        <div class="fb-target" data-id="Restoran · Kafe · Warung · Catering" data-en="Restaurant · Café · Warung · Catering">Restoran · Kafe · Warung · Catering</div>
+        <p class="fb-desc" data-id="Akuntansi khusus F&B dengan food cost otomatis per resep, waste tracking, daily sales per shift, dan payroll lengkap dengan PPh21 TER 2024 dan BPJS 5 komponen." data-en="F&B-specific accounting with auto food cost per recipe, waste tracking, daily sales by shift, and full payroll with PPh21 TER 2024 and 5-component BPJS.">Akuntansi khusus F&B dengan food cost otomatis per resep, waste tracking, daily sales per shift, dan payroll lengkap dengan PPh21 TER 2024 dan BPJS 5 komponen.</p>
+        <div class="fb-features">
+          <span class="fb-feat">Food Cost Otomatis</span><span class="fb-feat">Resep &amp; Menu</span>
+          <span class="fb-feat">Waste Tracking</span><span class="fb-feat">Daily Sales / Shift</span>
+          <span class="fb-feat">PPh21 TER 2024</span><span class="fb-feat">BPJS 5 Komponen</span>
+          <span class="fb-feat">Slip Gaji</span>
+        </div>
+        <a href="imd-toolkit/financebook-fnb.html" class="fb-cta">
+          <span data-id="Buka FinanceBook F&B" data-en="Open FinanceBook F&B">Buka FinanceBook F&amp;B</span>
+          <span class="fb-cta-arrow">→</span>
+        </a>
+      </div>
+
+      <div class="fb-card retail reveal">
+        <div class="fb-card-header"><div class="fb-icon">🏪</div><span class="fb-badge live">● Live</span></div>
+        <div class="fb-name">FinanceBook Retail</div>
+        <div class="fb-target" data-id="Toko · Distributor · Grosir · Minimarket" data-en="Store · Distributor · Wholesale · Minimarket">Toko · Distributor · Grosir · Minimarket</div>
+        <p class="fb-desc" data-id="Akuntansi khusus retail dengan multi-harga eceran/grosir otomatis, manajemen stok WA per SKU, Purchase Order, retur customer & supplier, dan laporan per produk." data-en="Retail-specific accounting with auto wholesale/retail pricing, weighted average inventory per SKU, Purchase Orders, returns, and per-product reports.">Akuntansi khusus retail dengan multi-harga eceran/grosir otomatis, manajemen stok WA per SKU, Purchase Order, retur customer &amp; supplier, dan laporan per produk.</p>
+        <div class="fb-features">
+          <span class="fb-feat">Multi-Harga Eceran/Grosir</span><span class="fb-feat">WA Inventory / SKU</span>
+          <span class="fb-feat">Purchase Order</span><span class="fb-feat">Retur Customer</span>
+          <span class="fb-feat">Retur Supplier</span><span class="fb-feat">PPh21 TER 2024</span>
+          <span class="fb-feat">BPJS 5 Komponen</span>
+        </div>
+        <a href="imd-toolkit/financebook-retail.html" class="fb-cta">
+          <span data-id="Buka FinanceBook Retail" data-en="Open FinanceBook Retail">Buka FinanceBook Retail</span>
+          <span class="fb-cta-arrow">→</span>
+        </a>
+      </div>
+
+    </div>
+    <div class="fb-stats reveal">
+      <div class="fb-stat"><div class="fb-stat-num">100/100</div><div class="fb-stat-lbl" data-id="Audit Score" data-en="Audit Score">Audit Score</div><div class="fb-stat-sub" data-id="F&B & Retail edition" data-en="F&B & Retail edition">F&amp;B &amp; Retail edition</div></div>
+      <div class="fb-stat"><div class="fb-stat-num">43/43</div><div class="fb-stat-lbl" data-id="TER Bracket Verified" data-en="TER Bracket Verified">TER Bracket Verified</div><div class="fb-stat-sub" data-id="PMK 168/2023 · March 2026" data-en="PMK 168/2023 · March 2026">PMK 168/2023 · March 2026</div></div>
+      <div class="fb-stat"><div class="fb-stat-num">99</div><div class="fb-stat-lbl" data-id="Transaksi Diuji" data-en="Transactions Tested">Transaksi Diuji</div><div class="fb-stat-sub" data-id="Selisih Rp 0 · Debit = Kredit" data-en="Zero variance · Debit = Credit">Selisih Rp 0 · Debit = Kredit</div></div>
+      <div class="fb-stat"><div class="fb-stat-num">0</div><div class="fb-stat-lbl" data-id="Instalasi Dibutuhkan" data-en="Installation Required">Instalasi Dibutuhkan</div><div class="fb-stat-sub" data-id="Langsung jalan di browser" data-en="Runs directly in browser">Langsung jalan di browser</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── PLATFORM PILLARS ── -->
+<section id="platform">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow cy" data-id="Ekosistem IMD" data-en="IMD Ecosystem">Ekosistem IMD</div>
+      <h2 class="section-title" data-id="Tiga Pilar Platform" data-en="Three Platform Pillars">Tiga Pilar Platform</h2>
+      <p class="section-desc" data-id="IMD dirancang sebagai ekosistem terintegrasi. Tools untuk operasional harian, Academy untuk naik level, Consulting untuk keputusan strategis." data-en="IMD is built as an integrated ecosystem. Tools for daily operations, Academy to level up, Consulting for strategic decisions.">IMD dirancang sebagai ekosistem terintegrasi. Tools untuk operasional harian, Academy untuk naik level, Consulting untuk keputusan strategis.</p>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar-card tools reveal">
+        <div class="pillar-icon">🧰</div>
+        <div class="pillar-name" data-id="IMD Tools" data-en="IMD Tools">IMD Tools</div>
+        <div class="pillar-label" data-id="Operasional Harian" data-en="Daily Operations">Operasional Harian</div>
+        <p class="pillar-desc" data-id="Aplikasi dan template siap pakai untuk keuangan bisnis harian. Tidak perlu software mahal — cukup buka browser dan mulai." data-en="Ready-to-use apps and templates for daily business finance. No expensive software — just open a browser and start.">Aplikasi dan template siap pakai untuk keuangan bisnis harian. Tidak perlu software mahal — cukup buka browser dan mulai.</p>
+        <div class="pillar-items">
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="FinanceBook General — Universal" data-en="FinanceBook General — Universal">FinanceBook General — Universal</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="FinanceBook F&B — Restoran & Kafe" data-en="FinanceBook F&B — Restaurants & Cafes">FinanceBook F&amp;B — Restoran &amp; Kafe</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="FinanceBook Retail — Toko & Grosir" data-en="FinanceBook Retail — Stores & Wholesale">FinanceBook Retail — Toko &amp; Grosir</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Template Excel & Dashboard (segera)" data-en="Excel Templates & Dashboard (soon)">Template Excel &amp; Dashboard (segera)</span></div>
+        </div>
+        <span class="pillar-status s-live">● Live</span>
+      </div>
+      <div class="pillar-card academy reveal">
+        <div class="pillar-icon">🎓</div>
+        <div class="pillar-name" data-id="IMD Academy" data-en="IMD Academy">IMD Academy</div>
+        <div class="pillar-label" data-id="Edukasi & Pelatihan" data-en="Education & Training">Edukasi &amp; Pelatihan</div>
+        <p class="pillar-desc" data-id="Training dan kelas online untuk profesional bisnis Indonesia. Dari akuntansi dasar hingga revenue management." data-en="Training and online courses for Indonesian business professionals. From basic accounting to revenue management.">Training dan kelas online untuk profesional bisnis Indonesia. Dari akuntansi dasar hingga revenue management.</p>
+        <div class="pillar-items">
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Kelas online akuntansi UMKM" data-en="Online SME accounting courses">Kelas online akuntansi UMKM</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Training offline hospitality" data-en="Offline hospitality training">Training offline hospitality</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Psychology of Money" data-en="Psychology of Money">Psychology of Money</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Sertifikat kompetensi" data-en="Competency certificates">Sertifikat kompetensi</span></div>
+        </div>
+        <span class="pillar-status s-soon">⏳ Segera Hadir</span>
+      </div>
+      <div class="pillar-card consulting reveal">
+        <div class="pillar-icon">💼</div>
+        <div class="pillar-name" data-id="IMD Consulting" data-en="IMD Consulting">IMD Consulting</div>
+        <div class="pillar-label" data-id="Pendampingan Strategis" data-en="Strategic Advisory">Pendampingan Strategis</div>
+        <p class="pillar-desc" data-id="Konsultasi langsung untuk bisnis yang ingin naik kelas. Financial health check, budgeting, SOP, dan advisory berkelanjutan." data-en="Direct consulting for businesses ready to scale. Financial health check, budgeting, SOPs, and ongoing advisory.">Konsultasi langsung untuk bisnis yang ingin naik kelas. Financial health check, budgeting, SOP, dan advisory berkelanjutan.</p>
+        <div class="pillar-items">
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Financial health check" data-en="Financial health check">Financial health check</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Budgeting & cash flow" data-en="Budgeting & cash flow">Budgeting &amp; cash flow</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="SOP keuangan & operasional" data-en="Financial & operational SOPs">SOP keuangan &amp; operasional</span></div>
+          <div class="pillar-item"><div class="pillar-dot"></div><span data-id="Pendampingan 1-on-1 (3 bulan)" data-en="1-on-1 advisory (3 months)">Pendampingan 1-on-1 (3 bulan)</span></div>
+        </div>
+        <span class="pillar-status s-soon">⏳ Segera Hadir</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how">
+  <div class="inner-md">
+    <div class="reveal" style="text-align:center">
+      <div class="eyebrow" style="justify-content:center" data-id="Cara Kerja" data-en="How It Works">Cara Kerja</div>
+      <h2 class="section-title" data-id="Mulai dalam 3 Langkah" data-en="Start in 3 Steps">Mulai dalam 3 Langkah</h2>
+      <p class="section-desc" style="margin:0 auto" data-id="FinanceBook berjalan langsung di browser — tidak ada software yang perlu diunduh, tidak ada akun yang perlu dibuat." data-en="FinanceBook runs directly in your browser — no software to download, no account to create.">FinanceBook berjalan langsung di browser — tidak ada software yang perlu diunduh, tidak ada akun yang perlu dibuat.</p>
+    </div>
+    <div class="how-grid reveal">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-step-title" data-id="Pilih Edisi" data-en="Choose Edition">Pilih Edisi</div>
+        <p class="how-step-desc" data-id="General untuk bisnis umum, F&B untuk restoran & kafe, Retail untuk toko & distributor. Masing-masing sudah disesuaikan." data-en="General for any business, F&B for restaurants & cafes, Retail for stores & distributors. Each tailored.">General untuk bisnis umum, F&amp;B untuk restoran &amp; kafe, Retail untuk toko &amp; distributor.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-step-title" data-id="Buka di Browser" data-en="Open in Browser">Buka di Browser</div>
+        <p class="how-step-desc" data-id="Klik tombol buka — aplikasi langsung aktif. Tidak perlu instalasi, login, atau cloud subscription." data-en="Click open — app runs immediately. No installation, login, or cloud subscription.">Klik tombol buka — aplikasi langsung aktif. Tidak perlu instalasi, login, atau cloud.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-step-title" data-id="Mulai Catat Transaksi" data-en="Start Recording">Mulai Catat Transaksi</div>
+        <p class="how-step-desc" data-id="Input transaksi, kelola payroll & BPJS, cetak slip gaji, dan lihat laporan keuangan lengkap — semua di satu tempat." data-en="Input transactions, manage payroll & BPJS, print payslips, and view complete financial reports — all in one place.">Input transaksi, kelola payroll &amp; BPJS, cetak slip gaji, dan lihat laporan keuangan lengkap.</p>
+      </div>
+    </div>
+    <div style="text-align:center" class="reveal">
+      <div class="how-highlight">
+        <span>⚡</span>
+        <span data-id="100% berjalan di browser · Data tersimpan lokal · Zero cloud dependency" data-en="100% runs in browser · Data stored locally · Zero cloud dependency">100% berjalan di browser · Data tersimpan lokal · Zero cloud dependency</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── PRICING ── -->
+<section id="pricing">
+  <div class="inner">
+    <div class="reveal" style="text-align:center">
+      <div class="eyebrow" style="justify-content:center" data-id="Harga" data-en="Pricing">Harga</div>
+      <h2 class="section-title" data-id="Transparan. Terjangkau. Per Bisnis." data-en="Transparent. Affordable. Per Business.">Transparan. Terjangkau. Per Bisnis.</h2>
+      <p class="section-desc" style="margin:0 auto 40px" data-id="Lisensi per bisnis, bukan per pengguna. Bayar sekali, pakai selamanya." data-en="License per business, not per user. Pay once, use forever.">Lisensi per bisnis, bukan per pengguna. Bayar sekali, pakai selamanya.</p>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-val"><span class="price-curr">Rp</span><span>99<span style="font-size:1.2rem">rb</span></span></div>
+        <div class="price-period" data-id="lisensi per bisnis · sekali bayar" data-en="license per business · one-time">lisensi per bisnis · sekali bayar</div>
+        <p class="price-target" data-id="Untuk bisnis baru yang mulai membangun sistem keuangan." data-en="For new businesses starting their financial system.">Untuk bisnis baru yang mulai membangun sistem keuangan.</p>
+        <div class="price-features">
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="FinanceBook General Edition" data-en="FinanceBook General Edition">FinanceBook General Edition</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Jurnal, Invoice, AR/AP" data-en="Journal, Invoice, AR/AP">Jurnal, Invoice, AR/AP</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Laporan L/R, Neraca, Arus Kas" data-en="P&L, Balance Sheet, Cash Flow">Laporan L/R, Neraca, Arus Kas</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Google Sheets integration" data-en="Google Sheets integration">Google Sheets integration</span></div>
+          <div class="price-feat"><span class="pfx">✗</span><span style="color:var(--t3)" data-id="Payroll & PPh21 TER" data-en="Payroll & PPh21 TER">Payroll &amp; PPh21 TER</span></div>
+          <div class="price-feat"><span class="pfx">✗</span><span style="color:var(--t3)" data-id="Modul industri spesifik" data-en="Industry-specific modules">Modul industri spesifik</span></div>
+        </div>
+        <a href="https://wa.me/62" class="price-btn pbq" data-id="Hubungi via WA" data-en="Contact via WA">Hubungi via WA</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tier">Pro</div>
+        <div class="price-val"><span class="price-curr">Rp</span><span>149<span style="font-size:1.2rem">rb</span></span></div>
+        <div class="price-period" data-id="lisensi per bisnis · sekali bayar" data-en="license per business · one-time">lisensi per bisnis · sekali bayar</div>
+        <p class="price-target" data-id="Untuk bisnis F&B atau Retail dengan kebutuhan modul spesifik." data-en="For F&B or Retail businesses needing specific modules.">Untuk bisnis F&amp;B atau Retail dengan kebutuhan modul spesifik.</p>
+        <div class="price-features">
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="F&B Edition atau Retail Edition" data-en="F&B Edition or Retail Edition">F&amp;B Edition atau Retail Edition</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Jurnal, Invoice, AR/AP, COA" data-en="Journal, Invoice, AR/AP, COA">Jurnal, Invoice, AR/AP, COA</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Payroll + BPJS 5 Komponen" data-en="Payroll + 5-Component BPJS">Payroll + BPJS 5 Komponen</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="PPh21 TER 2024 · PMK 168/2023" data-en="PPh21 TER 2024 · PMK 168/2023">PPh21 TER 2024 · PMK 168/2023</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Slip Gaji + Laporan Pajak" data-en="Payslip + Tax Reports">Slip Gaji + Laporan Pajak</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Modul industri (F&B atau Retail)" data-en="Industry module (F&B or Retail)">Modul industri (F&amp;B atau Retail)</span></div>
+        </div>
+        <a href="https://wa.me/62" class="price-btn pbg" data-id="🚀 Dapatkan Sekarang" data-en="🚀 Get Now">🚀 Dapatkan Sekarang</a>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Business</div>
+        <div class="price-val"><span class="price-curr">Rp</span><span>199<span style="font-size:1.2rem">rb</span></span></div>
+        <div class="price-period" data-id="lisensi per bisnis · sekali bayar" data-en="license per business · one-time">lisensi per bisnis · sekali bayar</div>
+        <p class="price-target" data-id="Untuk bisnis yang butuh semua edisi dan dukungan setup langsung." data-en="For businesses needing all editions and direct setup support.">Untuk bisnis yang butuh semua edisi dan dukungan setup langsung.</p>
+        <div class="price-features">
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Semua 3 edisi FinanceBook" data-en="All 3 FinanceBook editions">Semua 3 edisi FinanceBook</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Semua fitur Pro + General" data-en="All Pro + General features">Semua fitur Pro + General</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Setup & onboarding 1-on-1" data-en="1-on-1 setup & onboarding">Setup &amp; onboarding 1-on-1</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Konsultasi chart of accounts" data-en="Chart of accounts consulting">Konsultasi chart of accounts</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Update gratis 1 tahun" data-en="Free updates 1 year">Update gratis 1 tahun</span></div>
+          <div class="price-feat"><span class="pfc">✓</span><span data-id="Priority WA support" data-en="Priority WA support">Priority WA support</span></div>
+        </div>
+        <a href="https://wa.me/62" class="price-btn pbq" data-id="Hubungi via WA" data-en="Contact via WA">Hubungi via WA</a>
+      </div>
+    </div>
+    <p class="pricing-note reveal" data-id="Semua harga termasuk lisensi permanen · Tidak ada langganan bulanan · Berlaku untuk 1 bisnis" data-en="All prices include permanent license · No monthly subscription · Valid for 1 business">Semua harga termasuk lisensi permanen · Tidak ada langganan bulanan · Berlaku untuk 1 bisnis</p>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="inner-sm">
+    <div class="reveal" style="text-align:center">
+      <div class="eyebrow" style="justify-content:center" data-id="FAQ" data-en="FAQ">FAQ</div>
+      <h2 class="section-title" data-id="Pertanyaan yang Sering Ditanyakan" data-en="Frequently Asked Questions">Pertanyaan yang Sering Ditanyakan</h2>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item reveal" onclick="toggleFAQ(this)">
+        <div class="faq-q"><span class="faq-q-text" data-id="Apakah FinanceBook berbasis cloud?" data-en="Is FinanceBook cloud-based?">Apakah FinanceBook berbasis cloud?</span><div class="faq-chevron">▾</div></div>
+        <div class="faq-a"><p class="faq-a-text" data-id="Tidak. FinanceBook berjalan 100% di browser secara lokal. Data tersimpan di perangkat kamu sendiri — tidak ada server eksternal, tidak ada cloud, tidak ada risiko data bocor ke pihak ketiga." data-en="No. FinanceBook runs 100% locally in your browser. Data is stored on your own device — no external servers, no cloud, no risk of data leaking to third parties.">Tidak. FinanceBook berjalan 100% di browser secara lokal. Data tersimpan di perangkat kamu sendiri — tidak ada server eksternal, tidak ada cloud, tidak ada risiko data bocor ke pihak ketiga.</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFAQ(this)">
+        <div class="faq-q"><span class="faq-q-text" data-id="Apakah perlu instalasi atau unduhan?" data-en="Does it require installation or download?">Apakah perlu instalasi atau unduhan?</span><div class="faq-chevron">▾</div></div>
+        <div class="faq-a"><p class="faq-a-text" data-id="Tidak perlu instalasi apapun. Klik tombol 'Buka Aplikasi' dan FinanceBook langsung aktif di browser — Chrome, Firefox, Safari, atau Edge. Tidak ada app yang perlu diunduh, tidak ada akun yang perlu dibuat." data-en="No installation needed. Click 'Open App' and FinanceBook runs immediately in your browser — Chrome, Firefox, Safari, or Edge. No app to download, no account to create.">Tidak perlu instalasi apapun. Klik 'Buka Aplikasi' dan FinanceBook langsung aktif — Chrome, Firefox, Safari, atau Edge. Tidak ada app diunduh, tidak ada akun dibuat.</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFAQ(this)">
+        <div class="faq-q"><span class="faq-q-text" data-id="Apakah PPh21 TER sudah sesuai PMK 168/2023?" data-en="Is PPh21 TER compliant with PMK 168/2023?">Apakah PPh21 TER sudah sesuai PMK 168/2023?</span><div class="faq-chevron">▾</div></div>
+        <div class="faq-a"><p class="faq-a-text">Ya. Perhitungan PPh21 menggunakan TER 2024 sesuai PMK 168/2023. Tabel TER A, B, dan C — <strong>43 bracket diverifikasi 100%</strong> terhadap Lampiran resmi PMK. BPJS mencakup 5 komponen dengan cap JP Rp 9.077.600.</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFAQ(this)">
+        <div class="faq-q"><span class="faq-q-text" data-id="Apakah mendukung banyak pengguna?" data-en="Does it support multiple users?">Apakah mendukung banyak pengguna?</span><div class="faq-chevron">▾</div></div>
+        <div class="faq-a"><p class="faq-a-text" data-id="FinanceBook adalah aplikasi single-user. Satu lisensi untuk satu bisnis — bisa digunakan oleh pemilik atau staf keuangan. Untuk kebutuhan multi-pengguna, hubungi kami untuk solusi custom." data-en="FinanceBook is a single-user application. One license per business — usable by the owner or finance staff. For multi-user needs, contact us for a custom solution.">FinanceBook adalah aplikasi single-user. Satu lisensi untuk satu bisnis — bisa digunakan oleh pemilik atau staf keuangan. Untuk kebutuhan multi-pengguna, hubungi kami untuk solusi custom.</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFAQ(this)">
+        <div class="faq-q"><span class="faq-q-text" data-id="Apa perbedaan ketiga edisi FinanceBook?" data-en="What's the difference between the three editions?">Apa perbedaan ketiga edisi FinanceBook?</span><div class="faq-chevron">▾</div></div>
+        <div class="faq-a"><p class="faq-a-text"><strong>General</strong> cocok untuk bisnis apapun yang butuh akuntansi dasar. <strong>F&amp;B Edition</strong> menambahkan food cost per resep, waste tracking, dan daily sales per shift. <strong>Retail Edition</strong> menambahkan multi-harga eceran/grosir, WA inventory per SKU, Purchase Order, dan retur.</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="toggleFAQ(this)">
+        <div class="faq-q"><span class="faq-q-text" data-id="Apakah data aman jika browser ditutup?" data-en="Is data safe if the browser is closed?">Apakah data aman jika browser ditutup?</span><div class="faq-chevron">▾</div></div>
+        <div class="faq-a"><p class="faq-a-text" data-id="FinanceBook mendukung integrasi Google Sheets — data tersimpan di Google Drive milikmu dan aman meski browser ditutup. Tanpa Google Sheets, gunakan fitur export CSV sebagai backup rutin." data-en="FinanceBook supports Google Sheets integration — data saved to your own Google Drive and safe even if the browser closes. Without Google Sheets, use the CSV export feature as a regular backup.">FinanceBook mendukung integrasi Google Sheets — data tersimpan di Google Drive milikmu dan aman meski browser ditutup. Tanpa Google Sheets, gunakan fitur export CSV sebagai backup rutin.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="inner">
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="eyebrow" data-id="Tentang IMD" data-en="About IMD">Tentang IMD</div>
+        <h2 class="section-title" data-id="Dibangun oleh Praktisi, untuk Praktisi" data-en="Built by Practitioners, for Practitioners">Dibangun oleh Praktisi, untuk Praktisi</h2>
+        <p class="about-body" data-id="IMD lahir dari satu keyakinan: keputusan bisnis yang lebih baik dimulai dari data dan sistem yang lebih baik. Kami menggabungkan pengalaman lapangan dengan teknologi untuk menghadirkan tools yang benar-benar dipakai." data-en="IMD was born from a belief: better business decisions start with better data and systems. We combine field experience with technology to deliver tools that are actually used.">IMD lahir dari satu keyakinan: keputusan bisnis yang lebih baik dimulai dari data dan sistem yang lebih baik. Kami menggabungkan pengalaman lapangan dengan teknologi untuk menghadirkan tools yang benar-benar dipakai.</p>
+        <div class="about-badge">
+          <div class="about-avatar">SF</div>
+          <div><div class="about-name">Sanda Frendianto &amp; Team</div><div class="about-loc">Asst. Financial Controller · Surabaya, Indonesia</div></div>
+        </div>
+        <div class="about-quote" data-id='"Intelligence untuk mereka yang bermain jangka panjang."' data-en='"Intelligence for those playing the long game."'>"Intelligence untuk mereka yang bermain jangka panjang."</div>
+      </div>
+      <div class="about-stats reveal">
+        <div class="about-stat"><div class="about-stat-num">3</div><div class="about-stat-lbl" data-id="Pilar Platform" data-en="Platform Pillars">Pilar Platform</div><div class="about-stat-note">Tools · Academy · Consulting</div></div>
+        <div class="about-stat"><div class="about-stat-num">3</div><div class="about-stat-lbl" data-id="Edisi FinanceBook" data-en="FinanceBook Editions">Edisi FinanceBook</div><div class="about-stat-note">General · F&amp;B · Retail</div></div>
+        <div class="about-stat"><div class="about-stat-num">100%</div><div class="about-stat-lbl" data-id="Audit Score" data-en="Audit Score">Audit Score</div><div class="about-stat-note" data-id="F&B & Retail edition" data-en="F&B & Retail edition">F&amp;B &amp; Retail edition</div></div>
+        <div class="about-stat"><div class="about-stat-num">2026</div><div class="about-stat-lbl" data-id="Tahun Berdiri" data-en="Founded">Tahun Berdiri</div><div class="about-stat-note">Surabaya, Jawa Timur</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── FINAL CTA ── -->
+<section id="cta">
+  <div class="inner-md">
+    <div class="cta-box reveal">
+      <div class="cta-orb"></div>
+      <h2 class="cta-title" data-id="Mulai Kelola Keuangan Bisnismu Hari Ini" data-en="Start Managing Your Business Finances Today">Mulai Kelola Keuangan Bisnismu Hari Ini</h2>
+      <p class="cta-desc" data-id="Pilih edisi FinanceBook yang sesuai dan mulai langsung di browser — gratis dicoba, tanpa instalasi, tanpa akun." data-en="Choose the FinanceBook edition that fits and start right in your browser — free to try, no installation, no account.">Pilih edisi FinanceBook yang sesuai dan mulai langsung di browser — gratis dicoba, tanpa instalasi, tanpa akun.</p>
+      <div class="cta-actions">
+        <a href="imd-toolkit/financebook-fnb.html"    class="btn btn-gold"  data-id="🍽️ F&B Edition"     data-en="🍽️ F&B Edition">🍽️ F&amp;B Edition</a>
+        <a href="imd-toolkit/financebook-retail.html" class="btn btn-cy"    data-id="🏪 Retail Edition"  data-en="🏪 Retail Edition">🏪 Retail Edition</a>
+        <a href="imd-toolkit/financebook.html"        class="btn btn-ghost" data-id="📒 General Edition" data-en="📒 General Edition">📒 General Edition</a>
+      </div>
+      <div class="cta-trust">
+        <div class="trust-item">✅ <span data-id="PPh21 TER 2024 Compliant" data-en="PPh21 TER 2024 Compliant">PPh21 TER 2024 Compliant</span></div>
+        <div class="trust-item">🔒 <span data-id="Data 100% di perangkatmu" data-en="Data 100% on your device">Data 100% di perangkatmu</span></div>
+        <div class="trust-item">⚡ <span data-id="Zero instalasi" data-en="Zero installation">Zero instalasi</span></div>
+        <div class="trust-item">💬 <span data-id="Dukungan via WhatsApp" data-en="WhatsApp support">Dukungan via WhatsApp</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-main">IMD · Ingat Masa Depan</div>
+        <div class="footer-brand-sub" data-id="Platform Bisnis Indonesia" data-en="Indonesian Business Platform">Platform Bisnis Indonesia</div>
+        <p class="footer-brand-desc" data-id="Ekosistem Tools, Academy, dan Consulting untuk bisnis Indonesia yang bermain jangka panjang." data-en="Tools, Academy, and Consulting ecosystem for Indonesian businesses playing the long game.">Ekosistem Tools, Academy, dan Consulting untuk bisnis Indonesia yang bermain jangka panjang.</p>
+      </div>
+      <div>
+        <div class="footer-col-title" data-id="Tools" data-en="Tools">Tools</div>
+        <div class="footer-links-col">
+          <a href="imd-toolkit/" class="footer-link" data-id="IMD Toolkit Hub" data-en="IMD Toolkit Hub">IMD Toolkit Hub</a>
+          <a href="imd-toolkit/financebook.html" class="footer-link" data-id="FinanceBook General" data-en="FinanceBook General">FinanceBook General <span class="flb">Live</span></a>
+          <a href="imd-toolkit/financebook-fnb.html" class="footer-link" data-id="FinanceBook F&B" data-en="FinanceBook F&B">FinanceBook F&amp;B <span class="flb">Live</span></a>
+          <a href="imd-toolkit/financebook-retail.html" class="footer-link" data-id="FinanceBook Retail" data-en="FinanceBook Retail">FinanceBook Retail <span class="flb">Live</span></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title" data-id="Platform" data-en="Platform">Platform</div>
+        <div class="footer-links-col">
+          <a href="#platform" class="footer-link" data-id="IMD Academy (Segera)" data-en="IMD Academy (Soon)">IMD Academy (Segera)</a>
+          <a href="#platform" class="footer-link" data-id="IMD Consulting (Segera)" data-en="IMD Consulting (Soon)">IMD Consulting (Segera)</a>
+          <a href="#pricing"  class="footer-link" data-id="Harga" data-en="Pricing">Harga</a>
+          <a href="#faq"      class="footer-link" data-id="FAQ" data-en="FAQ">FAQ</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title" data-id="Perusahaan" data-en="Company">Perusahaan</div>
+        <div class="footer-links-col">
+          <a href="#about"      class="footer-link" data-id="Tentang IMD" data-en="About IMD">Tentang IMD</a>
+          <a href="https://wa.me/62" class="footer-link" data-id="Hubungi Kami" data-en="Contact Us">Hubungi Kami</a>
+          <a href="backstage/"  class="footer-link" data-id="Admin" data-en="Admin">Admin</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy" data-id="© 2026 IMD · Ingat Masa Depan · Curated by Sanda Frendianto & Team · Surabaya, Indonesia" data-en="© 2026 IMD · Ingat Masa Depan · Curated by Sanda Frendianto & Team · Surabaya, Indonesia">© 2026 IMD · Ingat Masa Depan · Curated by Sanda Frendianto &amp; Team · Surabaya, Indonesia</div>
+    </div>
+  </div>
+</footer>
+
+</div><!-- .page -->
+
+<script>
+let _lang=localStorage.getItem('imd_lang')||'id';
+function toggleLang(){setLang(_lang==='id'?'en':'id');}
+function setLang(l){
+  _lang=l;try{localStorage.setItem('imd_lang',l);}catch(e){}
+  document.querySelectorAll('[data-id]').forEach(el=>{
+    const t=l==='en'?(el.getAttribute('data-en')||el.getAttribute('data-id')):el.getAttribute('data-id');
+    if(t)el.textContent=t;
+  });
+  const th=document.getElementById('langThumb'),oi=document.getElementById('optId'),oe=document.getElementById('optEn');
+  if(th)th.className='lang-switch-thumb'+(l==='en'?' en':'');
+  if(oi)oi.className='lang-switch-opt'+(l==='id'?' active':'');
+  if(oe)oe.className='lang-switch-opt'+(l==='en'?' active':'');
+  document.documentElement.lang=l==='en'?'en':'id';
+}
+setLang(_lang);
+
+function toggleMobileMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
+// Scroll reveal
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4)*0.08+'s';obs.observe(el);});
+
+// Nav scroll shadow
+window.addEventListener('scroll',()=>{
+  const n=document.getElementById('mainNav');
+  if(n)n.style.boxShadow=window.scrollY>20?'0 4px 30px rgba(0,0,0,0.4)':'none';
+},{passive:true});
+
+// Smooth anchors
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});closeMobileMenu();}
+  });
+});
+
+// FAQ
+function toggleFAQ(item){
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+</script>
+</body>
+</html>

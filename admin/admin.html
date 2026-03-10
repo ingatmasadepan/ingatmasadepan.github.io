@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel · IMD Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080C12;--bg2:#0D1117;--bg3:#111820;
+  --cy:#00D4FF;--cy2:#00B8D9;--teal:#00897B;
+  --gold:#D4A847;--gold2:#F5CC6B;--am:#FFD740;
+  --purple:#7C4DFF;--orange:#FF9100;
+  --gl:rgba(0,212,255,0.04);--gl2:rgba(0,212,255,0.07);
+  --gb:rgba(0,212,255,0.09);--gb2:rgba(0,212,255,0.18);
+  --gld:rgba(212,168,71,0.08);--gldb:rgba(212,168,71,0.2);
+  --t:#E8F4F8;--t2:#9DB8C8;--t3:#4A6070;
+  --gn:#00E676;--rd:#FF5252;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;
+  --sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);height:100%;overflow:hidden;}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;}
+#loginScreen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(212,168,71,0.05) 0%,transparent 60%);}
+.login-card{position:relative;background:var(--gl2);border:1px solid var(--gldb);border-radius:var(--r24);padding:40px 36px;width:400px;max-width:90vw;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.login-logo{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.login-sub{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:28px;}
+.login-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:20px;}
+.f{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.f label{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.f input{background:rgba(0,0,0,0.3);border:1px solid var(--gb);border-radius:var(--r12);padding:11px 14px;font-size:0.88rem;color:var(--t);outline:none;transition:border-color 0.2s;}
+.f input:focus{border-color:var(--gold);}
+.btn-login{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;border:none;border-radius:var(--r12);padding:13px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;width:100%;transition:opacity 0.2s;}
+.btn-login:hover{opacity:0.9;}
+.btn-login:disabled{opacity:0.5;cursor:not-allowed;}
+.alert{padding:10px 14px;border-radius:var(--r8);font-size:0.8rem;margin-bottom:14px;display:none;}
+.alert.show{display:flex;align-items:center;gap:8px;}
+.alert-err{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.25);color:#FF8A80;}
+.alert-ok{background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:var(--gn);}
+.spin{width:18px;height:18px;border:2px solid rgba(0,0,0,0.15);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── SETUP SCREEN ── */
+#setupScreen{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow-y:auto;}
+#setupScreen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 30% 30%,rgba(0,212,255,0.04) 0%,transparent 55%);}
+.setup-card{position:relative;background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r24);padding:40px 36px;width:540px;max-width:90vw;margin:20px;}
+.setup-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cy),transparent);}
+.setup-step{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--cy);margin-bottom:6px;}
+.setup-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:8px;}
+.setup-desc{font-size:0.82rem;color:var(--t2);line-height:1.7;margin-bottom:24px;}
+.info-row{background:var(--gl);border:1px solid var(--gb);border-radius:var(--r12);padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:10px;}
+.info-row-icon{font-size:1.1rem;flex-shrink:0;}
+.info-row-text{font-size:0.8rem;color:var(--t2);line-height:1.6;}
+.info-row-text strong{color:var(--t);font-weight:500;}
+.tab-row{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--gb);border-radius:var(--r12);overflow:hidden;}
+.tab-btn{flex:1;padding:10px;background:transparent;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);transition:all 0.2s;}
+.tab-btn.active{background:var(--gld);color:var(--gold);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.btn-cy{background:linear-gradient(135deg,var(--cy2),var(--teal));color:#fff;border:none;border-radius:var(--r12);padding:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;width:100%;transition:all 0.2s;}
+.btn-cy:hover{opacity:0.9;}
+.btn-cy:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* ── MAIN APP ── */
+#app{display:none;height:100vh;display:grid;grid-template-columns:var(--sidebar) 1fr;grid-template-rows:48px 1fr;}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;background:rgba(8,12,18,0.95);border-bottom:1px solid var(--gb);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;}
+.topbar-brand{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topbar-sep{color:var(--t3);font-size:0.7rem;}
+.topbar-cur{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.admin-chip{display:flex;align-items:center;gap:6px;background:rgba(212,168,71,0.1);border:1px solid var(--gldb);border-radius:20px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold);}
+.topbar-btn{background:none;border:none;cursor:pointer;color:var(--t3);font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;padding:0;}
+.topbar-btn:hover{color:var(--rd);}
+.refresh-btn{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r8);padding:4px 10px;cursor:pointer;color:var(--cy);font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;transition:all 0.2s;}
+.refresh-btn:hover{border-color:var(--cy);background:rgba(0,212,255,0.1);}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--gb);overflow-y:auto;padding:16px 0;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);padding:8px 10px 4px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r8);cursor:pointer;transition:all 0.15s;margin-bottom:1px;text-decoration:none;}
+.nav-item:hover{background:var(--gl2);}
+.nav-item.active{background:var(--gld);border:1px solid var(--gldb);}
+.nav-item-icon{font-size:0.95rem;width:20px;text-align:center;}
+.nav-item-label{font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;color:var(--t2);}
+.nav-item.active .nav-item-label{color:var(--gold);}
+.nav-badge{margin-left:auto;background:rgba(255,82,82,0.15);border:1px solid rgba(255,82,82,0.3);border-radius:20px;padding:2px 6px;font-family:'JetBrains Mono',monospace;font-size:0.45rem;letter-spacing:1px;color:var(--rd);}
+.nav-badge.gold{background:rgba(212,168,71,0.12);border-color:var(--gldb);color:var(--gold);}
+
+/* MAIN CONTENT */
+.main{overflow-y:auto;background:var(--bg);}
+.view{display:none;padding:28px;}
+.view.active{display:block;}
+.view-header{margin-bottom:28px;}
+.view-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px;}
+.view-desc{font-size:0.82rem;color:var(--t2);}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r16);padding:18px 16px;}
+.stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1;}
+.stat-num.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-num.green{color:var(--gn);}
+.stat-num.orange{color:var(--orange);}
+.stat-num.red{color:var(--rd);}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:4px;}
+
+/* TABLE */
+.table-wrap{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r16);overflow:hidden;}
+.table-head{padding:14px 18px;border-bottom:1px solid var(--gb);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.table-search{background:rgba(0,0,0,0.3);border:1px solid var(--gb);border-radius:var(--r8);padding:6px 10px;font-size:0.78rem;color:var(--t);outline:none;width:180px;transition:border-color 0.2s;}
+.table-search:focus{border-color:var(--gold);}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:10px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--gb);background:rgba(0,0,0,0.15);}
+tbody tr{border-bottom:1px solid rgba(0,212,255,0.05);transition:background 0.15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--gl);}
+td{padding:11px 16px;font-size:0.82rem;color:var(--t2);vertical-align:middle;}
+td strong{color:var(--t);font-weight:500;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;}
+.badge-active{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);color:var(--gn);}
+.badge-trial{background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--cy2);}
+.badge-pending{background:rgba(255,215,64,0.08);border:1px solid rgba(255,215,64,0.2);color:var(--am);}
+.badge-none{background:rgba(255,255,255,0.04);border:1px solid var(--gb);color:var(--t3);}
+.badge-expired{background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.2);color:var(--rd);}
+.badge-owner{background:rgba(212,168,71,0.1);border:1px solid var(--gldb);color:var(--gold);}
+.badge-role{background:var(--gl2);border:1px solid var(--gb);color:var(--t3);}
+
+/* ACTION BUTTONS */
+.act-btn{background:none;border:1px solid var(--gb);border-radius:var(--r8);padding:5px 10px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;color:var(--t2);transition:all 0.15s;margin-right:4px;}
+.act-btn:hover{border-color:var(--gold);color:var(--gold);}
+.act-btn.activate{border-color:rgba(0,230,118,0.3);color:var(--gn);}
+.act-btn.activate:hover{background:rgba(0,230,118,0.1);}
+.act-btn.deactivate{border-color:rgba(255,82,82,0.3);color:var(--rd);}
+.act-btn.deactivate:hover{background:rgba(255,82,82,0.08);}
+.act-btn.view-proof{border-color:rgba(0,212,255,0.3);color:var(--cy);}
+.act-btn.view-proof:hover{background:rgba(0,212,255,0.08);}
+
+/* PROOF MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--gb);border-radius:var(--r24);padding:32px;width:580px;max-width:90vw;max-height:80vh;overflow-y:auto;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--gl2);border:1px solid var(--gb);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);font-size:0.85rem;transition:all 0.2s;}
+.modal-close:hover{border-color:var(--rd);color:var(--rd);}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.modal-sub{font-size:0.78rem;color:var(--t3);margin-bottom:24px;}
+.detail-row{display:grid;grid-template-columns:120px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--gb);}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);}
+.detail-val{font-size:0.82rem;color:var(--t);word-break:break-all;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--gb);}
+.modal-btn{flex:1;padding:11px;border-radius:var(--r12);font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.2s;border:none;}
+.modal-btn-activate{background:linear-gradient(135deg,var(--gn),var(--teal));color:#fff;}
+.modal-btn-activate:hover{opacity:0.9;}
+.modal-btn-deactivate{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.3);color:var(--rd);}
+.modal-btn-deactivate:hover{background:rgba(255,82,82,0.18);}
+.modal-btn-close{background:transparent;border:1px solid var(--gb2);color:var(--t2);}
+.modal-btn-close:hover{border-color:var(--gold);color:var(--gold);}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 20px;color:var(--t3);}
+.empty-icon{font-size:2.5rem;margin-bottom:12px;}
+.empty-text{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--bg2);border:1px solid var(--gb);border-radius:var(--r16);padding:14px 18px;font-size:0.82rem;box-shadow:0 8px 32px rgba(0,0,0,0.5);transform:translateY(80px);opacity:0;transition:all 0.3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(0,230,118,0.3);color:var(--gn);}
+.toast.err{border-color:rgba(255,82,82,0.3);color:var(--rd);}
+
+/* LOADING */
+.loading-overlay{position:absolute;inset:0;background:rgba(8,12,18,0.85);display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(4px);}
+.loading-spinner{width:40px;height:40px;border:3px solid rgba(212,168,71,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--gb2);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--t3);}
+
+@media(max-width:768px){
+  #app{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ LOGIN SCREEN ════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">IMD · Ingat Masa Depan</div>
+    <div class="login-sub">Admin Panel</div>
+    <div class="login-title">🔐 Admin Login</div>
+    <div class="alert alert-err" id="loginErr">⚠ <span id="loginErrMsg"></span></div>
+    <div class="f"><label>Email Admin</label><input type="email" id="adminEmail" placeholder="admin@imd.id"></div>
+    <div class="f"><label>Password</label><input type="password" id="adminPw" placeholder="••••••••"></div>
+    <button class="btn-login" id="btnLogin" onclick="doAdminLogin()">
+      <span id="loginBtnText">Masuk sebagai Admin</span>
+      <span class="spin" id="loginSpin"></span>
+    </button>
+    <p style="text-align:center;margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--t3);">
+      Bukan admin? <a href="/" style="color:var(--gold);text-decoration:none;">Kembali ke Platform</a>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SETUP SCREEN ════════════ -->
+<div id="setupScreen" style="display:none">
+  <div class="setup-card">
+    <div class="setup-step">Step 1 of 1 · First-Time Setup</div>
+    <div class="setup-title">⚙️ Setup IMD Platform</div>
+    <div class="setup-desc">Platform belum dikonfigurasi. Masukkan JSONBin credentials untuk menyimpan data pengguna, perusahaan, dan subscription.</div>
+
+    <div class="info-row"><div class="info-row-icon">💡</div><div class="info-row-text">
+      JSONBin.io digunakan sebagai backend database. Buat akun gratis di <strong>jsonbin.io</strong>, lalu ambil Master Key dari Settings → API Keys.
+    </div></div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchSetupTab('new')">Buat Bin Baru</button>
+      <button class="tab-btn" onclick="switchSetupTab('existing')">Gunakan Bin Yang Ada</button>
+    </div>
+
+    <div class="tab-pane active" id="tabNew">
+      <div class="f"><label>JSONBin Master Key *</label><input type="password" id="newApiKey" placeholder="$2a$10$..."></div>
+      <div class="f"><label>Email Admin *</label><input type="email" id="newAdminEmail" placeholder="admin@imd.id"></div>
+      <div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="f" style="margin-bottom:0"><label>Password Admin *</label><input type="password" id="newAdminPw" placeholder="Min 8 karakter"></div>
+        <div class="f" style="margin-bottom:0"><label>Konfirmasi Password *</label><input type="password" id="newAdminPw2" placeholder="Ulangi password"></div>
+      </div>
+      <div class="alert alert-err" id="setupErrNew" style="margin-top:12px">⚠ <span id="setupErrNewMsg"></span></div>
+      <button class="btn-cy" id="btnSetupNew" onclick="doSetupNew()" style="margin-top:8px">
+        <span id="setupNewText">Buat Platform & Inisialisasi Data</span>
+        <span class="spin" id="setupNewSpin" style="border-color:rgba(255,255,255,0.2);border-top-color:#fff;"></span>
+      </button>
+    </div>
+
+    <div class="tab-pane" id="tabExisting">
+      <div class="f"><label>JSONBin Master Key *</label><input type="password" id="exApiKey" placeholder="$2a$10$..."></div>
+      <div class="f"><label>Bin ID *</label><input type="text" id="exBinId" placeholder="69ab849a43b1c97be9bc21a1"></div>
+      <div class="alert alert-err" id="setupErrEx" style="margin-top:12px">⚠ <span id="setupErrExMsg"></span></div>
+      <button class="btn-cy" id="btnSetupEx" onclick="doSetupExisting()" style="margin-top:8px">
+        <span id="setupExText">Hubungkan ke Bin yang Ada</span>
+        <span class="spin" id="setupExSpin" style="border-color:rgba(255,255,255,0.2);border-top-color:#fff;"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ MAIN APP ════════════════ -->
+<div id="app" style="display:none">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">IMD · Ingat Masa Depan</div>
+    <span class="topbar-sep">›</span>
+    <span class="topbar-cur">Admin Panel</span>
+    <div class="topbar-right">
+      <a href="/" style="font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;color:var(--t3);text-decoration:none;margin-right:4px;">← Platform</a>
+      <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+      <div class="admin-chip">⚡ Admin</div>
+      <button class="topbar-btn" onclick="adminLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" onclick="switchView('dashboard')">
+        <span class="nav-item-icon">📊</span>
+        <span class="nav-item-label">Dashboard</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Pengguna</div>
+      <div class="nav-item" onclick="switchView('users')">
+        <span class="nav-item-icon">👤</span>
+        <span class="nav-item-label">Users</span>
+        <span class="nav-badge gold" id="badgeUsers">0</span>
+      </div>
+      <div class="nav-item" onclick="switchView('companies')">
+        <span class="nav-item-icon">🏢</span>
+        <span class="nav-item-label">Perusahaan</span>
+        <span class="nav-badge gold" id="badgeCompanies">0</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Langganan</div>
+      <div class="nav-item" onclick="switchView('payments')">
+        <span class="nav-item-icon">💳</span>
+        <span class="nav-item-label">Konfirmasi Bayar</span>
+        <span class="nav-badge" id="badgePending">0</span>
+      </div>
+      <div class="nav-item" onclick="switchView('subscriptions')">
+        <span class="nav-item-icon">🔑</span>
+        <span class="nav-item-label">Subscriptions</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">System</div>
+      <div class="nav-item" onclick="switchView('settings')">
+        <span class="nav-item-icon">⚙️</span>
+        <span class="nav-item-label">Settings</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="view active" id="view-dashboard">
+      <div class="view-header">
+        <div class="view-title">Dashboard</div>
+        <div class="view-desc">Ringkasan platform IMD</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num gold" id="statUsers">-</div><div class="stat-lbl">Total Users</div></div>
+        <div class="stat-card"><div class="stat-num gold" id="statCompanies">-</div><div class="stat-lbl">Perusahaan</div></div>
+        <div class="stat-card"><div class="stat-num green" id="statActive">-</div><div class="stat-lbl">Aktif</div></div>
+        <div class="stat-card"><div class="stat-num orange" id="statPending">-</div><div class="stat-lbl">Menunggu Verif</div></div>
+        <div class="stat-card"><div class="stat-num red" id="statExpired">-</div><div class="stat-lbl">Expired</div></div>
+      </div>
+
+      <!-- Pending payments table on dashboard -->
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">Konfirmasi Pembayaran — Perlu Diverifikasi</span>
+          <button class="refresh-btn" style="font-size:0.5rem" onclick="loadData()">↻</button>
+        </div>
+        <div id="dashPendingTable"><div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Tidak ada pembayaran yang menunggu</div></div></div>
+      </div>
+    </div>
+
+    <!-- ── USERS ── -->
+    <div class="view" id="view-users">
+      <div class="view-header">
+        <div class="view-title">Users</div>
+        <div class="view-desc">Semua pengguna terdaftar di platform IMD</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">Daftar Users</span>
+          <input class="table-search" placeholder="Cari email / nama..." oninput="filterTable('usersTable',this.value)">
+        </div>
+        <div style="overflow-x:auto"><table id="usersTable"><tbody><tr><td colspan="6" class="empty"><div class="empty-icon">👤</div><div class="empty-text">Memuat data...</div></td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── COMPANIES ── -->
+    <div class="view" id="view-companies">
+      <div class="view-header">
+        <div class="view-title">Perusahaan</div>
+        <div class="view-desc">Semua perusahaan terdaftar</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">Daftar Perusahaan</span>
+          <input class="table-search" placeholder="Cari nama..." oninput="filterTable('companiesTable',this.value)">
+        </div>
+        <div style="overflow-x:auto"><table id="companiesTable"><tbody></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── PAYMENTS ── -->
+    <div class="view" id="view-payments">
+      <div class="view-header">
+        <div class="view-title">Konfirmasi Pembayaran</div>
+        <div class="view-desc">Verifikasi bukti transfer dan aktifkan langganan</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">Payment Requests</span>
+          <input class="table-search" placeholder="Cari email / perusahaan..." oninput="filterTable('paymentsTable',this.value)">
+        </div>
+        <div style="overflow-x:auto"><table id="paymentsTable"><tbody></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── SUBSCRIPTIONS ── -->
+    <div class="view" id="view-subscriptions">
+      <div class="view-header">
+        <div class="view-title">Subscriptions</div>
+        <div class="view-desc">Kelola status langganan setiap perusahaan</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">Daftar Langganan</span>
+          <input class="table-search" placeholder="Cari perusahaan..." oninput="filterTable('subsTable',this.value)">
+        </div>
+        <div style="overflow-x:auto"><table id="subsTable"><tbody></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="view" id="view-settings">
+      <div class="view-header">
+        <div class="view-title">Settings</div>
+        <div class="view-desc">Konfigurasi platform dan kredensial</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px">
+        <!-- Bin Info -->
+        <div style="background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r16);padding:20px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:12px">JSONBin Connection</div>
+          <div style="font-size:0.78rem;color:var(--t2);line-height:2">
+            <div>Bin ID: <code style="color:var(--cy);font-size:0.72rem" id="settingsBinId">-</code></div>
+            <div>Status: <span id="settingsStatus" style="color:var(--gn)">●  Connected</span></div>
+          </div>
+          <button onclick="resetConnection()" style="margin-top:14px;background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.2);border-radius:var(--r8);padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--rd);cursor:pointer;">Reset Connection</button>
+        </div>
+        <!-- Data Export -->
+        <div style="background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r16);padding:20px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:12px">Data Export</div>
+          <p style="font-size:0.78rem;color:var(--t2);margin-bottom:14px;line-height:1.7">Export data platform sebagai JSON untuk backup.</p>
+          <button onclick="exportData()" style="background:var(--gld);border:1px solid var(--gldb);border-radius:var(--r8);padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--gold);cursor:pointer;">Export JSON</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .main -->
+</div><!-- #app -->
+
+<!-- PROOF MODAL -->
+<div class="modal-overlay" id="proofModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeProofModal()">✕</button>
+    <div class="modal-title" id="proofTitle">Detail Pembayaran</div>
+    <div class="modal-sub" id="proofSub">-</div>
+    <div id="proofDetails"></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-activate" id="proofActivateBtn" onclick="activateFromModal()">✓ Aktifkan Langganan</button>
+      <button class="modal-btn modal-btn-deactivate" id="proofRejectBtn" onclick="deactivateFromModal()">✕ Tolak</button>
+      <button class="modal-btn modal-btn-close" onclick="closeProofModal()">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="/platform/imd-platform.js"></script>
+<script>
+// ── STATE ──────────────────────────────────────────────────
+let _data = null;
+let _modalCompanyId = null;
+let _modalPayId = null;
+let _currentView = 'dashboard';
+
+// XSS escape — always use when inserting user-supplied strings into innerHTML
+function escH(str) {
+  if(str === null || str === undefined) return '-';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    .replace(/'/g,'&#x27;');
+}
+
+// ── STARTUP ────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  await IMD.init();
+  const session = IMD.Auth.getSession();
+
+  // Not configured → setup screen
+  if(!IMD.Store.isConfigured()) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('setupScreen').style.display = 'flex';
+    return;
+  }
+
+  // Already logged in as admin
+  if(session?.role === 'admin') {
+    showApp();
+    return;
+  }
+
+  document.getElementById('loginScreen').style.display = 'flex';
+});
+
+// ── SETUP: NEW BIN ─────────────────────────────────────────
+function switchSetupTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='new'?i===0:i===1)));
+  document.getElementById('tabNew').classList.toggle('active', tab==='new');
+  document.getElementById('tabExisting').classList.toggle('active', tab==='existing');
+}
+
+async function doSetupNew() {
+  const apiKey  = document.getElementById('newApiKey').value.trim();
+  const email   = document.getElementById('newAdminEmail').value.trim();
+  const pw      = document.getElementById('newAdminPw').value;
+  const pw2     = document.getElementById('newAdminPw2').value;
+  const errEl   = document.getElementById('setupErrNew');
+  const errMsg  = document.getElementById('setupErrNewMsg');
+
+  errEl.classList.remove('show');
+  if(!apiKey) { errMsg.textContent='Master Key wajib diisi.'; errEl.classList.add('show'); return; }
+  if(!email)  { errMsg.textContent='Email admin wajib diisi.'; errEl.classList.add('show'); return; }
+  if(pw.length < 8) { errMsg.textContent='Password minimal 8 karakter.'; errEl.classList.add('show'); return; }
+  if(pw !== pw2) { errMsg.textContent='Konfirmasi password tidak cocok.'; errEl.classList.add('show'); return; }
+
+  const btn = document.getElementById('btnSetupNew');
+  btn.disabled = true;
+  document.getElementById('setupNewSpin').style.display = 'inline-block';
+  document.getElementById('setupNewText').textContent = 'Membuat bin...';
+
+  try {
+    // 1. Create bin
+    const binId = await IMD.Store.createBin(apiKey, 'IMD Platform Data');
+    IMD.Store.setCredentials(binId, apiKey);
+    document.getElementById('setupNewText').textContent = 'Menginisialisasi data...';
+
+    // 2. Hash password and init
+    const pwHash = await IMD.U.sha256(pw + email.toLowerCase());
+    await IMD.Store.initialize(email.toLowerCase(), pwHash);
+
+    // 3. Login as admin
+    const session = { user_id:'admin', email:email.toLowerCase(), name:'Admin', company_id:null, role:'admin' };
+    IMD.Auth.saveSession(session);
+
+    document.getElementById('setupScreen').style.display = 'none';
+    showApp();
+    toast('Platform berhasil dikonfigurasi! Selamat datang, Admin.', 'ok');
+  } catch(e) {
+    errMsg.textContent = e.message;
+    errEl.classList.add('show');
+    btn.disabled = false;
+    document.getElementById('setupNewSpin').style.display = 'none';
+    document.getElementById('setupNewText').textContent = 'Buat Platform & Inisialisasi Data';
+  }
+}
+
+async function doSetupExisting() {
+  const apiKey = document.getElementById('exApiKey').value.trim();
+  const binId  = document.getElementById('exBinId').value.trim();
+  const errEl  = document.getElementById('setupErrEx');
+  const errMsg = document.getElementById('setupErrExMsg');
+
+  errEl.classList.remove('show');
+  if(!apiKey) { errMsg.textContent='Master Key wajib diisi.'; errEl.classList.add('show'); return; }
+  if(!binId)  { errMsg.textContent='Bin ID wajib diisi.'; errEl.classList.add('show'); return; }
+
+  const btn = document.getElementById('btnSetupEx');
+  btn.disabled = true;
+  document.getElementById('setupExSpin').style.display = 'inline-block';
+  document.getElementById('setupExText').textContent = 'Menghubungkan...';
+
+  try {
+    IMD.Store.setCredentials(binId, apiKey);
+    const data = await IMD.Store.get(true);
+    // Accept bins that are either properly initialized OR have platform-like data
+    const looksLikePlatformData = data?._initialized || Array.isArray(data?.users);
+    if(!looksLikePlatformData) throw new Error('Bin ini belum diinisialisasi sebagai IMD Platform. Gunakan opsi "Buat Bin Baru".');
+    document.getElementById('setupScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    toast('Berhasil terhubung ke bin. Silakan login.', 'ok');
+  } catch(e) {
+    errMsg.textContent = e.message;
+    errEl.classList.add('show');
+    btn.disabled = false;
+    document.getElementById('setupExSpin').style.display = 'none';
+    document.getElementById('setupExText').textContent = 'Hubungkan ke Bin yang Ada';
+  }
+}
+
+// ── LOGIN ──────────────────────────────────────────────────
+async function doAdminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pw    = document.getElementById('adminPw').value;
+  const btn   = document.getElementById('btnLogin');
+  const errEl = document.getElementById('loginErr');
+  const spin  = document.getElementById('loginSpin');
+
+  errEl.classList.remove('show');
+  btn.disabled = true;
+  spin.style.display = 'inline-block';
+  document.getElementById('loginBtnText').textContent = 'Memproses...';
+
+  try {
+    await IMD.Auth.loginAdmin(email, pw);
+    document.getElementById('loginScreen').style.display = 'none';
+    showApp();
+  } catch(e) {
+    document.getElementById('loginErrMsg').textContent = e.message;
+    errEl.classList.add('show');
+    btn.disabled = false;
+    spin.style.display = 'none';
+    document.getElementById('loginBtnText').textContent = 'Masuk sebagai Admin';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doAdminLogin();
+});
+
+// ── APP ────────────────────────────────────────────────────
+async function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'grid';
+  document.getElementById('settingsBinId').textContent = IMD.Store.getBinId() || '-';
+  await loadData();
+}
+
+async function loadData() {
+  try {
+    _data = await IMD.Store.get(true);
+    renderAll();
+  } catch(e) {
+    toast('Gagal memuat data: ' + e.message, 'err');
+  }
+}
+
+function renderAll() {
+  if(!_data) return;
+  // Defensive destructuring — all arrays guaranteed by _normalize in platform.js
+  const users             = Array.isArray(_data.users)            ? _data.users            : [];
+  const companies         = Array.isArray(_data.companies)        ? _data.companies        : [];
+  const subscriptions     = Array.isArray(_data.subscriptions)    ? _data.subscriptions    : [];
+  const payment_requests  = Array.isArray(_data.payment_requests) ? _data.payment_requests : [];
+
+  // Compute stats
+  const activeCount  = subscriptions.filter(s=>s.status==='ACTIVE').length;
+  const trialCount   = subscriptions.filter(s=>s.status==='TRIAL').length;
+  const pendingCount = subscriptions.filter(s=>s.status==='PENDING').length;
+  const expiredCount = subscriptions.filter(s=>s.status==='EXPIRED').length;
+  const pendingPays  = payment_requests.filter(p=>p.status==='PENDING');
+
+  document.getElementById('statUsers').textContent     = users.length;
+  document.getElementById('statCompanies').textContent = companies.length;
+  document.getElementById('statActive').textContent    = activeCount;
+  document.getElementById('statPending').textContent   = pendingCount;
+  document.getElementById('statExpired').textContent   = expiredCount;
+
+  document.getElementById('badgeUsers').textContent     = users.length;
+  document.getElementById('badgeCompanies').textContent = companies.length;
+  document.getElementById('badgePending').textContent   = pendingPays.length;
+  if(pendingPays.length > 0) document.getElementById('badgePending').style.background='rgba(255,82,82,0.15)';
+
+  renderDashPending(pendingPays, companies);
+  renderUsers(users, companies, subscriptions);
+  renderCompanies(companies, users, subscriptions);
+  renderPayments(payment_requests, companies);
+  renderSubscriptions(subscriptions, companies);
+}
+
+// ── RENDERERS ──────────────────────────────────────────────
+function getBadge(status) {
+  const map = {ACTIVE:'badge-active',TRIAL:'badge-trial',PENDING:'badge-pending',EXPIRED:'badge-expired',NONE:'badge-none',APPROVED:'badge-active',REJECTED:'badge-expired'};
+  return `<span class="badge ${map[status]||'badge-none'}">${status}</span>`;
+}
+
+function renderDashPending(pending, companies) {
+  const el = document.getElementById('dashPendingTable');
+  if(!pending.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Tidak ada pembayaran yang menunggu verifikasi</div></div>';
+    return;
+  }
+  el.innerHTML = `<div style="overflow-x:auto"><table>
+    <thead><tr><th>Perusahaan</th><th>Email</th><th>Paket</th><th>Jumlah</th><th>Waktu</th><th>Aksi</th></tr></thead>
+    <tbody>${pending.map(p => `
+      <tr>
+        <td><strong>${p.company_name||'-'}</strong></td>
+        <td>${p.user_email}</td>
+        <td>${p.plan_name||p.plan}</td>
+        <td style="color:var(--gold)">Rp ${(p.amount||0).toLocaleString('id-ID')}</td>
+        <td style="font-size:0.75rem;color:var(--t3)">${IMD.U.timeAgo(p.submitted_at)}</td>
+        <td>
+          <button class="act-btn view-proof" onclick="openProofModal('${p.id}','${p.company_id}')">🔍 Detail</button>
+          <button class="act-btn activate" onclick="quickActivate('${p.company_id}','${p.plan}','${p.id}')">✓ Aktifkan</button>
+        </td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function renderUsers(users, companies, subscriptions) {
+  const table = document.getElementById('usersTable');
+  if(!table) return;
+  if(!users.length) {
+    table.innerHTML = '<tbody><tr><td colspan="6"><div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Belum ada user terdaftar</div></div></td></tr></tbody>';
+    return;
+  }
+  table.innerHTML = '<thead><tr><th>Nama</th><th>Email</th><th>Perusahaan</th><th>Role</th><th>Subscription</th><th>Daftar</th></tr></thead><tbody></tbody>';
+  const tbody = table.querySelector('tbody');
+  tbody.innerHTML = users.map(u => {
+    const co  = companies.find(c=>c.id===u.company_id);
+    const sub = subscriptions.find(s=>s.company_id===u.company_id);
+    return `<tr>
+      <td><strong>${escH(u.name||'-')}</strong></td>
+      <td>${escH(u.email)}</td>
+      <td>${escH(co?.name||'-')}</td>
+      <td><span class="badge ${u.role==='owner'?'badge-owner':'badge-role'}">${escH(u.role)}</span></td>
+      <td>${getBadge(sub?.status||'NONE')}</td>
+      <td style="font-size:0.75rem;color:var(--t3)">${IMD.U.fmtDate(u.created_at)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCompanies(companies, users, subscriptions) {
+  const t = document.getElementById('companiesTable');
+  if(!companies.length) { t.innerHTML = '<tbody><tr><td><div class="empty"><div class="empty-icon">🏢</div><div class="empty-text">Belum ada perusahaan terdaftar</div></td></tr></tbody>'; return; }
+  t.innerHTML = `<thead><tr><th>Nama Perusahaan</th><th>Industri</th><th>Owner</th><th>Users</th><th>Subscription</th><th>Aksi</th></tr></thead>
+  <tbody>${companies.map(co => {
+    const sub   = subscriptions.find(s=>s.company_id===co.id);
+    const uCount = users.filter(u=>u.company_id===co.id).length;
+    return `<tr>
+      <td><strong>${escH(co.name)}</strong></td>
+      <td style="font-size:0.75rem;color:var(--t3)">${co.industry||'-'}</td>
+      <td style="font-size:0.78rem">${co.owner_email}</td>
+      <td style="text-align:center">${uCount}</td>
+      <td>${getBadge(sub?.status||'NONE')} <span style="font-size:0.7rem;color:var(--t3)">${sub?.plan||''}</span></td>
+      <td>
+        ${sub?.status!=='ACTIVE' ? `<button class="act-btn activate" onclick="activateCompany('${co.id}','${sub?.plan||'starter'}')">✓ Aktifkan</button>` : ''}
+        ${sub?.status==='ACTIVE' ? `<button class="act-btn deactivate" onclick="deactivateCompany('${co.id}')">✕ Nonaktifkan</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('')}</tbody>`;
+}
+
+function renderPayments(payment_requests, companies) {
+  const t = document.getElementById('paymentsTable');
+  if(!payment_requests.length) { t.innerHTML = '<tbody><tr><td><div class="empty"><div class="empty-icon">💳</div><div class="empty-text">Belum ada payment request</div></td></tr></tbody>'; return; }
+  t.innerHTML = `<thead><tr><th>Perusahaan</th><th>Email</th><th>Paket</th><th>Jumlah</th><th>Status</th><th>Dikirim</th><th>Aksi</th></tr></thead>
+  <tbody>${[...payment_requests].reverse().map(p => `<tr>
+    <td><strong>${p.company_name||'-'}</strong></td>
+    <td>${p.user_email}</td>
+    <td>${p.plan_name||p.plan}</td>
+    <td style="color:var(--gold)">Rp ${(p.amount||0).toLocaleString('id-ID')}</td>
+    <td>${getBadge(p.status||'PENDING')}</td>
+    <td style="font-size:0.75rem;color:var(--t3)">${IMD.U.fmtDate(p.submitted_at)}</td>
+    <td>
+      <button class="act-btn view-proof" onclick="openProofModal('${p.id}','${p.company_id}')">🔍 Detail</button>
+      ${p.status==='PENDING'?`<button class="act-btn activate" onclick="quickActivate('${p.company_id}','${p.plan}','${p.id}')">✓ Aktifkan</button>`:''}
+    </td>
+  </tr>`).join('')}</tbody>`;
+}
+
+function renderSubscriptions(subscriptions, companies) {
+  const t = document.getElementById('subsTable');
+  if(!subscriptions.length) { t.innerHTML = '<tbody><tr><td><div class="empty"><div class="empty-icon">🔑</div><div class="empty-text">Belum ada subscription</div></td></tr></tbody>'; return; }
+  t.innerHTML = `<thead><tr><th>Perusahaan</th><th>Paket</th><th>Status</th><th>Diaktifkan</th><th>Oleh</th><th>Aksi</th></tr></thead>
+  <tbody>${subscriptions.map(s => {
+    const co = companies.find(c=>c.id===s.company_id);
+    return `<tr>
+      <td><strong>${co?.name||s.company_id}</strong></td>
+      <td>${s.plan||'-'}</td>
+      <td>${getBadge(s.status)}</td>
+      <td style="font-size:0.75rem;color:var(--t3)">${IMD.U.fmtDate(s.activated_at)}</td>
+      <td style="font-size:0.75rem;color:var(--t3)">${s.activated_by||'-'}</td>
+      <td>
+        ${s.status!=='ACTIVE' ? `<button class="act-btn activate" onclick="activateCompany('${s.company_id}','${s.plan||'starter'}')">✓ Aktifkan</button>` : ''}
+        ${s.status==='ACTIVE' ? `<button class="act-btn deactivate" onclick="deactivateCompany('${s.company_id}')">✕ Nonaktifkan</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('')}</tbody>`;
+}
+
+// ── ACTIONS ────────────────────────────────────────────────
+async function quickActivate(companyId, planId, payId) {
+  if(!confirm('Aktifkan langganan perusahaan ini?')) return;
+  try {
+    await IMD.Sub.activate(companyId, planId||'starter', IMD.Auth.getSession().email);
+    toast('✅ Langganan berhasil diaktifkan!', 'ok');
+    await loadData();
+  } catch(e) { toast('Gagal: ' + e.message, 'err'); }
+}
+
+async function activateCompany(companyId, planId) {
+  if(!confirm('Aktifkan langganan perusahaan ini?')) return;
+  try {
+    await IMD.Sub.activate(companyId, planId||'starter', IMD.Auth.getSession().email);
+    toast('✅ Langganan berhasil diaktifkan!', 'ok');
+    await loadData();
+  } catch(e) { toast('Gagal: ' + e.message, 'err'); }
+}
+
+async function deactivateCompany(companyId) {
+  if(!confirm('Nonaktifkan langganan perusahaan ini?')) return;
+  try {
+    await IMD.Sub.deactivate(companyId);
+    toast('Langganan dinonaktifkan.', 'ok');
+    await loadData();
+  } catch(e) { toast('Gagal: ' + e.message, 'err'); }
+}
+
+// ── PROOF MODAL ────────────────────────────────────────────
+function openProofModal(payId, companyId) {
+  if(!_data) { toast('Data belum dimuat. Klik Refresh.', 'err'); return; }
+  const pay = _data.payment_requests.find(p=>p.id===payId);
+  const co  = _data.companies.find(c=>c.id===companyId);
+  const sub = _data.subscriptions.find(s=>s.company_id===companyId);
+  if(!pay) { toast('Payment request tidak ditemukan.', 'err'); return; }
+
+  _modalCompanyId = companyId;
+  _modalPayId     = payId;
+
+  document.getElementById('proofTitle').textContent = 'Detail Pembayaran — ' + (co?.name||companyId);
+  document.getElementById('proofSub').textContent   = 'Disubmit: ' + IMD.U.fmtDate(pay.submitted_at);
+
+  const rows = [
+    ['Perusahaan',   co?.name||'-'],
+    ['Email',        pay.user_email],
+    ['Paket',        (pay.plan_name||pay.plan) + ' · Rp ' + (pay.amount||0).toLocaleString('id-ID')],
+    ['Status',       pay.status],
+    ['Sub Saat Ini', sub?.status||'NONE'],
+    ['Link Bukti',   pay.proof_url ? `<a href="${pay.proof_url}" target="_blank" style="color:var(--cy)">Lihat Bukti Transfer →</a>` : '-'],
+    ['Keterangan',   pay.transfer_note||'-'],
+    ['Dikirim',      IMD.U.fmtDate(pay.submitted_at)],
+  ];
+
+  document.getElementById('proofDetails').innerHTML = rows.map(([l,v]) =>
+    `<div class="detail-row"><div class="detail-label">${l}</div><div class="detail-val">${v}</div></div>`
+  ).join('');
+
+  const isActive = pay.status !== 'PENDING';
+  document.getElementById('proofActivateBtn').style.display = isActive ? 'none' : '';
+  document.getElementById('proofRejectBtn').style.display   = isActive ? 'none' : '';
+  document.getElementById('proofModal').classList.add('open');
+}
+
+function closeProofModal() { document.getElementById('proofModal').classList.remove('open'); }
+
+async function activateFromModal() {
+  if(!_modalCompanyId) return;
+  const pay = _data.payment_requests.find(p=>p.id===_modalPayId);
+  await quickActivate(_modalCompanyId, pay?.plan||'starter', _modalPayId);
+  closeProofModal();
+}
+
+async function deactivateFromModal() {
+  if(!_modalCompanyId) return;
+  await deactivateCompany(_modalCompanyId);
+  closeProofModal();
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────
+function switchView(id) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+id)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')?.includes("'"+id+"'")) n.classList.add('active');
+  });
+  _currentView = id;
+}
+
+// ── SEARCH / FILTER ────────────────────────────────────────
+function filterTable(tableId, q) {
+  const table = document.getElementById(tableId);
+  if(!table) return;
+  const rows = table.querySelectorAll('tbody tr');
+  const lq = q.toLowerCase();
+  rows.forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(lq) ? '' : 'none';
+  });
+}
+
+// ── SETTINGS ───────────────────────────────────────────────
+function resetConnection() {
+  if(!confirm('Reset koneksi? Kamu perlu setup ulang platform.')) return;
+  localStorage.clear();
+  sessionStorage.clear();
+  location.reload();
+}
+
+function exportData() {
+  if(!_data) return;
+  const blob = new Blob([JSON.stringify(_data, null, 2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'imd-platform-export-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click(); URL.revokeObjectURL(url);
+  toast('Data berhasil diexport.', 'ok');
+}
+
+// ── UTILS ──────────────────────────────────────────────────
+function adminLogout() {
+  IMD.Auth.logout();
+  location.reload();
+}
+
+let toastTimer;
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = (type==='ok'?'✓ ':'⚠ ') + msg;
+  el.className = 'toast ' + type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{
+  "platform": {
+    "name": "IMD · Ingat Masa Depan",
+    "tagline": "Platform Bisnis Indonesia",
+    "currency": "IDR",
+    "currency_symbol": "Rp",
+    "version": "1.0.0",
+    "subscription_plans": [
+      {
+        "id": "starter",
+        "name": "Starter",
+        "price": 99000,
+        "description": "FinanceBook General Edition untuk bisnis baru",
+        "apps": ["general"],
+        "features": [
+          "FinanceBook General Edition",
+          "Jurnal, Invoice, AR/AP",
+          "Laporan L/R, Neraca, Arus Kas",
+          "Google Sheets integration",
+          "1 user account"
+        ],
+        "limits": { "users": 1 }
+      },
+      {
+        "id": "pro",
+        "name": "Pro",
+        "price": 149000,
+        "description": "F&B atau Retail Edition dengan modul spesifik",
+        "apps": ["general", "fnb", "retail"],
+        "popular": true,
+        "features": [
+          "Pilih: F&B Edition atau Retail Edition",
+          "Jurnal, Invoice, AR/AP, COA",
+          "Payroll + BPJS 5 Komponen",
+          "PPh21 TER 2024 · PMK 168/2023",
+          "Slip Gaji + Laporan Pajak",
+          "Hingga 3 user accounts"
+        ],
+        "limits": { "users": 3 }
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "price": 199000,
+        "description": "Semua edisi FinanceBook + onboarding 1-on-1",
+        "apps": ["general", "fnb", "retail"],
+        "features": [
+          "Semua 3 edisi FinanceBook",
+          "Semua fitur Pro + General",
+          "Setup & onboarding 1-on-1",
+          "Konsultasi chart of accounts",
+          "Update gratis 1 tahun",
+          "Priority WA support",
+          "Hingga 10 user accounts"
+        ],
+        "limits": { "users": 10 }
+      }
+    ]
+  },
+  "payment": {
+    "bank_name": "Bank Mandiri",
+    "account_number": "1400020079399",
+    "account_name": "Sanda Frendianto",
+    "instructions": [
+      "Transfer ke rekening bank di atas",
+      "Gunakan nama perusahaan kamu sebagai keterangan transfer",
+      "Simpan bukti transfer (screenshot / foto)",
+      "Upload bukti transfer di halaman ini",
+      "Kami akan verifikasi dalam 1×24 jam kerja"
+    ]
+  },
+  "contact": {
+    "whatsapp": "081236689430",
+    "email": "sanda.financialconsultant@gmail.com",
+    "instagram": "@imd.indonesia",
+    "city": "Surabaya, Indonesia"
+  }
+}

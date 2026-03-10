@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMD Toolkit · FinanceBook Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080C12;--bg2:#0D1117;--cy:#00D4FF;--cy2:#00B8D9;--teal:#00897B;--gold:#D4A847;--gold2:#F5CC6B;--am:#FFD740;--purple:#7C4DFF;--orange:#FF9100;--gl:rgba(0,212,255,0.04);--gl2:rgba(0,212,255,0.07);--gb:rgba(0,212,255,0.09);--gb2:rgba(0,212,255,0.18);--gld:rgba(212,168,71,0.08);--gldb:rgba(212,168,71,0.2);--t:#E8F4F8;--t2:#9DB8C8;--t3:#4A6070;--gn:#00E676;--rd:#FF5252;--r12:12px;--r16:16px;--r20:20px;--r24:24px;--nav-h:56px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden;}
+.canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}.canvas::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 0% 0%,rgba(0,212,255,0.05) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 100% 100%,rgba(0,137,123,0.07) 0%,transparent 60%);}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:drift linear infinite;}.o1{width:500px;height:500px;background:rgba(0,212,255,0.05);top:-100px;left:-100px;animation-duration:28s;}.o2{width:400px;height:400px;background:rgba(0,137,123,0.06);bottom:-80px;right:-80px;animation-duration:22s;animation-direction:reverse;}
+@keyframes drift{0%{transform:translate(0,0);}50%{transform:translate(20px,-15px);}100%{transform:translate(0,0);}}
+.page{position:relative;z-index:10;}
+
+/* IMD BAR */
+.imd-bar{display:flex;align-items:center;gap:8px;padding:10px 24px;background:rgba(0,0,0,0.4);border-bottom:1px solid rgba(212,168,71,0.12);font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;}
+.imd-bar a{color:rgba(212,168,71,0.75);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color 0.2s;}.imd-bar a:hover{color:var(--gold2);}
+.imd-bar-sep{color:rgba(255,255,255,0.2);}
+.imd-bar-cur{color:rgba(0,212,255,0.7);}
+.imd-bar-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.user-chip{display:flex;align-items:center;gap:6px;background:var(--gl2);border:1px solid var(--gb);border-radius:20px;padding:3px 10px;}
+.user-chip-name{color:var(--t2);font-size:0.55rem;}
+.sub-chip{padding:3px 8px;border-radius:20px;font-size:0.5rem;letter-spacing:1px;}
+.sub-active{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);color:var(--gn);}
+.sub-pending{background:rgba(255,215,64,0.08);border:1px solid rgba(255,215,64,0.2);color:var(--am);}
+.sub-none{background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.2);color:var(--rd);}
+.logout-btn{background:none;border:none;cursor:pointer;color:var(--t3);font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s;padding:0;}.logout-btn:hover{color:var(--rd);}
+
+/* HERO */
+.wrap{max-width:1100px;margin:0 auto;padding:48px 24px 80px;}
+.hero{text-align:center;margin-bottom:56px;}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:4px;text-transform:uppercase;color:var(--cy);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--cy));}
+.hero-eyebrow::after{background:linear-gradient(90deg,var(--cy),transparent);}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,6vw,3.5rem);font-weight:800;letter-spacing:-2px;margin-bottom:10px;background:linear-gradient(135deg,var(--t) 0%,var(--cy3,#B3F0FF) 50%,var(--cy) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:16px;}
+.hero-desc{font-size:0.88rem;color:var(--t2);line-height:1.85;max-width:500px;margin:0 auto;}
+
+/* ACCESS GATE */
+.gate-banner{margin:0 0 40px;padding:20px 24px;border-radius:var(--r16);display:flex;align-items:center;gap:16px;}
+.gate-banner.locked{background:rgba(255,82,82,0.06);border:1px solid rgba(255,82,82,0.2);}
+.gate-banner.pending{background:rgba(255,215,64,0.06);border:1px solid rgba(255,215,64,0.2);}
+.gate-banner.active{background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.15);}
+.gate-icon{font-size:1.8rem;flex-shrink:0;}
+.gate-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:4px;}
+.gate-msg{font-size:0.8rem;color:var(--t2);line-height:1.6;}
+.gate-actions{margin-left:auto;display:flex;gap:8px;flex-shrink:0;}
+.btn-xs{display:inline-flex;align-items:center;gap:5px;border-radius:var(--r12);padding:8px 14px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;cursor:pointer;transition:all 0.2s;text-decoration:none;border:none;white-space:nowrap;}
+.btn-gold-xs{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;}
+.btn-ghost-xs{background:transparent;color:var(--t2);border:1px solid var(--gb2);}
+.btn-ghost-xs:hover{color:var(--gold);border-color:var(--gold);}
+
+/* TOOL CARDS */
+.section-label{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--cy);margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,212,255,0.3),transparent);}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:48px;}
+.tool-card{background:var(--gl);border:1px solid var(--gb);border-radius:var(--r20);padding:28px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:14px;transition:all 0.25s;position:relative;overflow:hidden;}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cy),transparent);opacity:0;transition:opacity 0.3s;}
+.tool-card.unlocked:hover{border-color:rgba(0,212,255,0.25);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.4);}
+.tool-card.unlocked:hover::before{opacity:1;}
+.tool-card.locked{opacity:0.5;cursor:not-allowed;}
+.tool-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.tool-icon{font-size:2rem;}
+.tool-badge{font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:20px;font-weight:700;}
+.badge-live{background:rgba(0,230,118,0.12);border:1px solid rgba(0,230,118,0.3);color:var(--gn);}
+.badge-locked{background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.2);color:var(--rd);}
+.tool-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;}
+.tool-sub{font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+.tool-desc{font-size:0.82rem;color:var(--t2);line-height:1.8;flex:1;}
+.tool-features{display:flex;flex-wrap:wrap;gap:6px;}
+.tool-feat{font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:1px;padding:3px 8px;background:var(--gl2);border:1px solid var(--gb);border-radius:6px;color:var(--t3);}
+.tool-action{font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;color:var(--cy);display:flex;align-items:center;gap:6px;transition:gap 0.2s;}
+.tool-card.unlocked:hover .tool-action{gap:10px;}
+.tool-action-locked{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--t3);}
+
+/* COMING SOON */
+.soon-strip{background:linear-gradient(135deg,rgba(0,212,255,0.04),rgba(0,137,123,0.04));border:1px solid rgba(0,212,255,0.1);border-radius:var(--r16);padding:28px;text-align:center;margin-bottom:48px;}
+.soon-strip h3{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:6px;}
+.soon-strip p{font-size:0.8rem;color:var(--t3);}
+
+footer{border-top:1px solid var(--gb);padding:16px 24px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--t3);}
+
+/* TEAM MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--gb);border-radius:var(--r24);padding:32px;width:90%;max-width:520px;max-height:80vh;overflow-y:auto;}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:20px;}
+.modal-close{float:right;background:none;border:none;color:var(--t3);cursor:pointer;font-size:1.2rem;}
+.member-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--gb);}
+.member-avatar{width:34px;height:34px;border-radius:50%;background:var(--gld);border:1px solid var(--gldb);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;color:var(--gold);flex-shrink:0;}
+.member-name{font-size:0.85rem;font-weight:500;}
+.member-email{font-size:0.72rem;color:var(--t3);}
+.member-role{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:var(--gl2);border:1px solid var(--gb);color:var(--t3);}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field label{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.field input,.field select{background:rgba(0,0,0,0.3);border:1px solid var(--gb);border-radius:var(--r12);padding:10px 12px;font-size:0.85rem;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--gold);}
+
+@media(max-width:640px){.wrap{padding:32px 16px 60px;}.gate-banner{flex-direction:column;align-items:flex-start;}.gate-actions{margin-left:0;}.tools-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="canvas"><div class="orb o1"></div><div class="orb o2"></div></div>
+
+<!-- IMD BAR -->
+<div class="imd-bar">
+  <a href="/"><span>◆</span><span>IMD · Ingat Masa Depan</span></a>
+  <span class="imd-bar-sep">›</span>
+  <span class="imd-bar-cur">IMD Toolkit</span>
+  <div class="imd-bar-right">
+    <div class="user-chip">
+      <span class="user-chip-name" id="chipName">-</span>
+      <span class="sub-chip sub-none" id="subChip">-</span>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+    <button class="btn-xs btn-ghost-xs" onclick="openTeamModal()" style="font-size:0.5rem">👥 Tim</button>
+  </div>
+</div>
+
+<div class="page">
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Business Tools · FinanceBook Suite</div>
+    <div class="hero-title">IMD Toolkit</div>
+    <div class="hero-sub">IMD · Ingat Masa Depan</div>
+    <p class="hero-desc">Aplikasi akuntansi lengkap untuk UMKM Indonesia. Pilih edisi yang sesuai dengan jenis bisnismu.</p>
+  </div>
+
+  <!-- ACCESS GATE BANNER -->
+  <div id="gateBanner" style="display:none"></div>
+
+  <!-- LIVE TOOLS -->
+  <div class="section-label" id="sectionLabel">Tersedia Sekarang</div>
+  <div class="tools-grid">
+
+    <div class="tool-card" id="cardGeneral">
+      <div class="tool-card-top"><span class="tool-icon">📒</span><span class="tool-badge badge-live">● Live</span></div>
+      <div><div class="tool-name">FinanceBook General</div><div class="tool-sub">Accounting · Universal</div></div>
+      <p class="tool-desc">Akuntansi lengkap untuk semua jenis bisnis. Jurnal umum, invoice, AR/AP, laba rugi, neraca, dan arus kas.</p>
+      <div class="tool-features">
+        <span class="tool-feat">Jurnal Umum</span><span class="tool-feat">Invoicing</span>
+        <span class="tool-feat">AR/AP</span><span class="tool-feat">Laba Rugi</span>
+        <span class="tool-feat">Neraca</span><span class="tool-feat">Arus Kas</span>
+      </div>
+      <div id="actionGeneral"></div>
+    </div>
+
+    <div class="tool-card" id="cardFnb">
+      <div class="tool-card-top"><span class="tool-icon">🍽️</span><span class="tool-badge badge-live">● Live</span></div>
+      <div><div class="tool-name">FinanceBook F&B</div><div class="tool-sub">Restoran · Kafe · Warung</div></div>
+      <p class="tool-desc">Akuntansi khusus F&B. Food cost otomatis, waste tracking, daily sales per shift, payroll PPh21 TER 2024.</p>
+      <div class="tool-features">
+        <span class="tool-feat">Food Cost</span><span class="tool-feat">Resep & Menu</span>
+        <span class="tool-feat">Waste Log</span><span class="tool-feat">Payroll</span>
+        <span class="tool-feat">PPh21 TER</span><span class="tool-feat">BPJS</span>
+      </div>
+      <div id="actionFnb"></div>
+    </div>
+
+    <div class="tool-card" id="cardRetail">
+      <div class="tool-card-top"><span class="tool-icon">🏪</span><span class="tool-badge badge-live">● Live</span></div>
+      <div><div class="tool-name">FinanceBook Retail</div><div class="tool-sub">Toko · Distributor · Grosir</div></div>
+      <p class="tool-desc">Akuntansi khusus retail. Multi-harga, WA inventory per SKU, Purchase Order, retur, payroll PPh21 TER 2024.</p>
+      <div class="tool-features">
+        <span class="tool-feat">Multi-Harga</span><span class="tool-feat">WA Inventory</span>
+        <span class="tool-feat">Purchase Order</span><span class="tool-feat">Retur</span>
+        <span class="tool-feat">PPh21 TER</span><span class="tool-feat">BPJS</span>
+      </div>
+      <div id="actionRetail"></div>
+    </div>
+
+  </div>
+
+  <!-- COMING SOON -->
+  <div class="section-label">Segera Hadir</div>
+  <div class="tools-grid" style="margin-bottom:28px">
+    <div class="tool-card locked"><div class="tool-card-top"><span class="tool-icon">📊</span><span class="tool-badge badge-locked">Soon</span></div><div><div class="tool-name">Dashboard Keuangan</div><div class="tool-sub">Excel · Dashboard</div></div><p class="tool-desc">Template Excel dashboard keuangan otomatis. Input data → semua grafik dan KPI muncul.</p></div>
+    <div class="tool-card locked"><div class="tool-card-top"><span class="tool-icon">🧮</span><span class="tool-badge badge-locked">Soon</span></div><div><div class="tool-name">Kalkulator HPP</div><div class="tool-sub">Excel · Calculator</div></div><p class="tool-desc">Hitung harga pokok produksi dan tentukan harga jual yang tepat.</p></div>
+    <div class="tool-card locked"><div class="tool-card-top"><span class="tool-icon">📈</span><span class="tool-badge badge-locked">Soon</span></div><div><div class="tool-name">Proyeksi 12 Bulan</div><div class="tool-sub">Excel · Projection</div></div><p class="tool-desc">Template proyeksi keuangan untuk presentasi ke bank atau investor.</p></div>
+  </div>
+
+  <div class="soon-strip">
+    <h3>💡 Ada kebutuhan template spesifik?</h3>
+    <p>Hubungi kami — kami bisa buat template custom sesuai kebutuhan bisnis kamu.</p>
+    <a id="waBtn" href="#" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:linear-gradient(135deg,var(--cy2),var(--teal));color:#fff;border:none;border-radius:var(--r12);padding:10px 20px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;text-decoration:none;">💬 Hubungi via WhatsApp</a>
+  </div>
+
+</div>
+</div>
+
+<!-- TEAM MODAL -->
+<div class="modal-overlay" id="teamModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeTeamModal()">✕</button>
+    <div class="modal-title">👥 Manajemen Tim</div>
+    <div id="memberList" style="margin-bottom:20px;"></div>
+    <div style="border-top:1px solid var(--gb);padding-top:16px;margin-top:8px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;">Tambah Anggota</div>
+      <div class="field"><label>Email User</label><input type="email" id="inviteEmail" placeholder="email@user.com"></div>
+      <div class="field"><label>Role</label>
+        <select id="inviteRole">
+          <option value="accounting">Accounting</option>
+          <option value="inventory">Inventory</option>
+          <option value="viewer">Viewer</option>
+        </select>
+      </div>
+      <button class="btn-xs btn-gold-xs" style="width:100%;padding:10px;justify-content:center;" onclick="addMember()">Tambah Anggota</button>
+      <div id="teamMsg" style="margin-top:8px;font-size:0.78rem;text-align:center;color:var(--t3);"></div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 IMD · Ingat Masa Depan · IMD Toolkit · Curated by Sanda Frendianto & Team · Surabaya</footer>
+
+<script src="/platform/imd-platform.js"></script>
+<script>
+let _session = null;
+let _sub = null;
+
+async function init() {
+  await IMD.init();
+
+  // Not logged in → login page
+  if(!IMD.Auth.isLoggedIn()) {
+    showGate('locked', '🔐', 'Login Diperlukan', 'Kamu perlu login untuk mengakses FinanceBook.',
+      [{href:'/auth/login.html?redirect='+encodeURIComponent(location.href),text:'Login',cls:'btn-gold-xs'},
+       {href:'/auth/register.html',text:'Daftar Baru',cls:'btn-ghost-xs'}]);
+    setAllCardsLocked();
+    return;
+  }
+
+  _session = IMD.Auth.getSession();
+  document.getElementById('chipName').textContent = _session.name || _session.email;
+
+  // Load WA
+  const cfg = IMD.Config.get();
+  const wa = cfg?.contact?.whatsapp;
+  if(wa) document.getElementById('waBtn').href = 'https://wa.me/62' + wa.replace(/^0/,'');
+
+  // Not configured
+  if(!IMD.Store.isConfigured()) {
+    document.getElementById('subChip').textContent = 'Not configured';
+    showGate('locked','⚙️','Platform Belum Dikonfigurasi','Hubungi admin IMD untuk setup.',
+      [{href:'/',text:'Kembali ke Home',cls:'btn-ghost-xs'}]);
+    setAllCardsLocked();
+    return;
+  }
+
+  // Check subscription
+  _sub = await IMD.Sub.getByCompany(_session.company_id, true);
+  const chip = document.getElementById('subChip');
+
+  if(_sub.status === 'ACTIVE') {
+    chip.className = 'sub-chip sub-active';
+    chip.textContent = '● AKTIF';
+    document.getElementById('gateBanner').style.display = 'none';
+    setCardsUnlocked();
+  } else if(_sub.status === 'PENDING') {
+    chip.className = 'sub-chip sub-pending';
+    chip.textContent = '⏳ MENUNGGU';
+    showGate('pending','⏳','Pembayaran Sedang Diverifikasi','Tim IMD sedang memeriksa pembayaranmu. Estimasi 1×24 jam kerja.',
+      [{href:'/subscribe/index.html',text:'Cek Status',cls:'btn-ghost-xs'}]);
+    setAllCardsLocked();
+  } else if(_sub.status === 'EXPIRED') {
+    chip.className = 'sub-chip sub-none';
+    chip.textContent = 'EXPIRED';
+    showGate('locked','📅','Langganan Kadaluarsa','Perpanjang langgananmu untuk kembali mengakses FinanceBook.',
+      [{href:'/subscribe/index.html',text:'Perpanjang',cls:'btn-gold-xs'}]);
+    setAllCardsLocked();
+  } else {
+    chip.className = 'sub-chip sub-none';
+    chip.textContent = 'BELUM AKTIF';
+    showGate('locked','💳','Belum Berlangganan','Pilih paket untuk mengaktifkan akses ke FinanceBook.',
+      [{href:'/subscribe/index.html',text:'Pilih Paket',cls:'btn-gold-xs'},
+       {href:'/auth/login.html',text:'Ganti Akun',cls:'btn-ghost-xs'}]);
+    setAllCardsLocked();
+  }
+}
+
+function showGate(type, icon, title, msg, actions) {
+  const el = document.getElementById('gateBanner');
+  const actHtml = actions.map(a=>`<a href="${a.href}" class="btn-xs ${a.cls}">${a.text}</a>`).join('');
+  el.innerHTML = `<div class="gate-icon">${icon}</div><div><div class="gate-title">${title}</div><div class="gate-msg">${msg}</div></div><div class="gate-actions">${actHtml}</div>`;
+  el.className = 'gate-banner ' + type;
+  el.style.display = 'flex';
+}
+
+function setCardsUnlocked() {
+  ['General','Fnb','Retail'].forEach(n => {
+    const id = n.toLowerCase() === 'general' ? 'general' : n.toLowerCase() === 'fnb' ? 'fnb' : 'retail';
+    const card = document.getElementById('card'+n);
+    if(card) { card.className='tool-card unlocked'; card.style.cursor='pointer'; }
+    const action = document.getElementById('action'+n);
+    if(action) action.innerHTML = `<a href="launcher.html?app=${id}" class="tool-action">Buka Aplikasi <span>→</span></a>`;
+  });
+}
+
+function setAllCardsLocked() {
+  ['General','Fnb','Retail'].forEach(n => {
+    const card = document.getElementById('card'+n);
+    if(card) card.className='tool-card locked';
+    const action = document.getElementById('action'+n);
+    if(action) action.innerHTML = '<div class="tool-action-locked">🔒 Langganan diperlukan</div>';
+  });
+}
+
+function doLogout() {
+  try { IMD.Auth.logout(); } catch(e) { /* ignore */ }
+  window.location.replace('/auth/login.html');
+}
+
+// TEAM MODAL
+async function openTeamModal() {
+  if(!_session) return;
+  document.getElementById('teamModal').classList.add('open');
+  const members = await IMD.Team.getMembers(_session.company_id);
+  const list = document.getElementById('memberList');
+  list.innerHTML = members.length === 0 ? '<p style="color:var(--t3);font-size:0.8rem">Belum ada anggota tim.</p>' :
+    members.map(m => `
+    <div class="member-row">
+      <div class="member-avatar">${(m.name||m.email||'?')[0].toUpperCase()}</div>
+      <div><div class="member-name">${m.name||'-'}</div><div class="member-email">${m.email}</div></div>
+      <div class="member-role">${m.role}</div>
+    </div>`).join('');
+}
+
+function closeTeamModal() { document.getElementById('teamModal').classList.remove('open'); }
+
+async function addMember() {
+  const email = document.getElementById('inviteEmail').value.trim();
+  const role  = document.getElementById('inviteRole').value;
+  const msg   = document.getElementById('teamMsg');
+  msg.style.color = 'var(--t3)';
+  msg.textContent = 'Menambahkan...';
+  try {
+    await IMD.Team.invite(_session.company_id, email, role, _session.user_id);
+    msg.style.color = 'var(--gn)';
+    msg.textContent = '✓ Anggota berhasil ditambahkan.';
+    document.getElementById('inviteEmail').value = '';
+    setTimeout(openTeamModal, 800);
+  } catch(e) {
+    msg.style.color = 'var(--rd)';
+    msg.textContent = '⚠ ' + e.message;
+  }
+}
+
+init().catch(e => {
+  console.error('Toolkit init error:', e);
+  // Show error in gate banner
+  showGate('locked', '⚠️', 'Terjadi Kesalahan',
+    e.message || 'Gagal memuat platform. Coba refresh halaman.',
+    [{href:'javascript:location.reload()', text:'Refresh', cls:'btn-gold-xs'},
+     {href:'/auth/login.html', text:'Login Ulang', cls:'btn-ghost-xs'}]);
+});
+</script>
+</body>
+</html>

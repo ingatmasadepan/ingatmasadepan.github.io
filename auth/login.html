@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login · IMD Platform</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080C12;--bg2:#0D1117;--bg3:#111820;
+  --cy:#00D4FF;--cy2:#00B8D9;--teal:#00897B;
+  --gold:#D4A847;--gold2:#F5CC6B;--am:#FFD740;
+  --gl:rgba(0,212,255,0.04);--gl2:rgba(0,212,255,0.07);
+  --gb:rgba(0,212,255,0.09);--gb2:rgba(0,212,255,0.18);
+  --gld:rgba(212,168,71,0.08);--gldb:rgba(212,168,71,0.2);
+  --t:#E8F4F8;--t2:#9DB8C8;--t3:#4A6070;
+  --gn:#00E676;--rd:#FF5252;--am2:#FFD740;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden;}
+.canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.canvas::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 5% 15%,rgba(212,168,71,0.04) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 95% 85%,rgba(0,137,123,0.06) 0%,transparent 55%);}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:drift 28s linear infinite;}
+.o1{width:500px;height:500px;background:rgba(212,168,71,0.04);top:-100px;left:-100px;}
+.o2{width:400px;height:400px;background:rgba(0,137,123,0.05);bottom:-80px;right:-80px;animation-direction:reverse;}
+@keyframes drift{0%{transform:translate(0,0);}50%{transform:translate(20px,-15px);}100%{transform:translate(0,0);}}
+.page{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;}
+
+/* TOP BAR */
+.top-bar{padding:14px 28px;border-bottom:1px solid var(--gb);display:flex;align-items:center;gap:12px;background:rgba(8,12,18,0.8);backdrop-filter:blur(16px);}
+.top-bar-brand{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.top-bar-sep{color:var(--t3);font-size:0.7rem;}
+.top-bar-cur{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.top-bar-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.top-bar-link{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-decoration:none;transition:color 0.2s;}
+.top-bar-link:hover{color:var(--gold);}
+
+/* CARD */
+.card{background:var(--gl2);border:1px solid var(--gb);border-radius:var(--r24);padding:40px 36px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.card-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;}
+.card-sub{font-size:0.82rem;color:var(--t2);margin-bottom:32px;line-height:1.6;}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.field label{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.field input, .field select, .field textarea{background:rgba(0,0,0,0.3);border:1px solid var(--gb);border-radius:var(--r12);padding:12px 14px;font-size:0.88rem;color:var(--t);font-family:'DM Sans',sans-serif;transition:border-color 0.2s;outline:none;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field input::placeholder{color:var(--t3);}
+.field select option{background:var(--bg2);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--r12);padding:13px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;letter-spacing:0.4px;transition:all 0.2s;text-decoration:none;border:none;width:100%;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;}
+.btn-gold:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,71,0.25);}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--gb2);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-cy{background:linear-gradient(135deg,var(--cy2),var(--teal));color:#fff;}
+.btn-cy:hover{opacity:0.9;transform:translateY(-1px);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none !important;}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:var(--r12);font-size:0.82rem;margin-bottom:16px;display:none;}
+.alert.show{display:flex;align-items:center;gap:10px;}
+.alert-err{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.25);color:#FF8A80;}
+.alert-ok{background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:var(--gn);}
+.alert-warn{background:rgba(255,215,64,0.08);border:1px solid rgba(255,215,64,0.2);color:var(--am);}
+
+/* MISC */
+.divider-text{display:flex;align-items:center;gap:12px;margin:20px 0;font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.divider-text::before,.divider-text::after{content:'';flex:1;height:1px;background:var(--gb);}
+.link-sm{font-size:0.8rem;color:var(--t2);text-decoration:none;transition:color 0.2s;}
+.link-sm:hover{color:var(--gold);}
+.link-sm.gold{color:var(--gold);}
+.centered{max-width:460px;margin:auto;padding:60px 28px;}
+
+/* LOADING SPINNER */
+.spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.2);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="canvas"><div class="orb o1"></div><div class="orb o2"></div></div>
+<div class="page">
+
+  <div class="top-bar">
+    <a href="/" class="top-bar-brand">IMD · Ingat Masa Depan</a>
+    <span class="top-bar-sep">›</span>
+    <span class="top-bar-cur">Login</span>
+    <div class="top-bar-right">
+      <a href="/auth/register.html" class="top-bar-link">Daftar Akun</a>
+    </div>
+  </div>
+
+  <div class="centered">
+    <div class="card">
+      <div class="card-title">Selamat Datang</div>
+      <div class="card-sub">Masuk ke IMD Platform untuk mengakses FinanceBook</div>
+
+      <div class="alert alert-err" id="alertErr">⚠ <span id="errMsg"></span></div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" maxlength="254" placeholder="nama@perusahaan.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" maxlength="128" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn btn-gold" id="btnLogin" onclick="doLogin()">
+        <span id="btnText">Masuk</span>
+        <span class="spinner" id="spinner" style="display:none"></span>
+      </button>
+
+      <div class="divider-text">atau</div>
+
+      <a href="/auth/register.html" class="btn btn-ghost">Daftar Akun Baru</a>
+
+      <div style="text-align:center;margin-top:20px;">
+        <a href="/" class="link-sm">← Kembali ke Landing Page</a>
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:16px;font-size:0.75rem;color:var(--t3);">
+      Admin? <a href="/admin/admin.html" class="link-sm gold">Panel Admin →</a>
+    </p>
+  </div>
+
+</div>
+
+<footer style="border-top:1px solid rgba(0,212,255,0.09);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:10;">
+  <span style="font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;background:linear-gradient(135deg,#F5CC6B,#D4A847);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">IMD · Ingat Masa Depan</span>
+  <div style="display:flex;gap:20px;">
+    <a href="/" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--t3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Beranda</a>
+    <a href="/auth/register.html" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--t3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Daftar</a>
+    <a href="https://wa.me/6281236689430" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--t3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;">Bantuan</a>
+  </div>
+</footer>
+<script src="/platform/imd-platform.js"></script>
+<script>
+// Client-side rate limiting: max 5 failed attempts per 15 min window
+const _rl = {
+  key: 'imd_login_attempts',
+  max: 5,
+  window: 15 * 60 * 1000,
+  check() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(this.key) || '{"count":0,"since":0}');
+      if (Date.now() - stored.since > this.window) { localStorage.removeItem(this.key); return true; }
+      return stored.count < this.max;
+    } catch { return true; }
+  },
+  record() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(this.key) || '{"count":0,"since":0}');
+      const fresh = Date.now() - stored.since > this.window;
+      localStorage.setItem(this.key, JSON.stringify({
+        count: fresh ? 1 : stored.count + 1,
+        since: fresh ? Date.now() : stored.since
+      }));
+    } catch {}
+  },
+  reset() { localStorage.removeItem(this.key); },
+  minutesLeft() {
+    try {
+      const s = JSON.parse(localStorage.getItem(this.key) || '{"count":0,"since":0}');
+      return Math.max(0, Math.ceil((this.window - (Date.now() - s.since)) / 60000));
+    } catch { return 0; }
+  }
+};
+
+IMD.init().then(() => {
+  // Already logged in?
+  if(IMD.Auth.isLoggedIn()) {
+    const redirect = IMD.U.getParam('redirect');
+    IMD.U.redirect(redirect || '/imd-toolkit/');
+  }
+  if(!IMD.Store.isConfigured()) {
+    // Show soft warning — don't block login flow (admin may need to login to configure)
+    console.warn('Platform not configured — admin should visit /admin/admin.html to set up');
+    showErr('Platform belum dikonfigurasi. Admin perlu setup via <a href="/admin/admin.html" style="color:inherit">Panel Admin</a>.');
+  }
+});
+
+function showErr(msg) {
+  document.getElementById('errMsg').textContent = msg;
+  document.getElementById('alertErr').classList.add('show');
+}
+
+async function doLogin() {
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn      = document.getElementById('btnLogin');
+  const spinner  = document.getElementById('spinner');
+  const btnText  = document.getElementById('btnText');
+
+  document.getElementById('alertErr').classList.remove('show');
+
+  // Rate limiting
+  if (!_rl.check()) {
+    showErr(\`Terlalu banyak percobaan login. Coba lagi dalam \${_rl.minutesLeft()} menit.\`);
+    return;
+  }
+
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  btnText.textContent = 'Memproses...';
+
+  try {
+    await IMD.Auth.login(email, password);
+    _rl.reset();
+    const redirectParam = IMD.U.getParam('redirect');
+    const safeRedirect = (redirectParam && redirectParam.startsWith('/')) ? redirectParam : '/dashboard/';
+    IMD.U.redirect(safeRedirect);
+  } catch(e) {
+    _rl.record();
+    showErr(e.message);
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    btnText.textContent = 'Masuk';
+  }
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>

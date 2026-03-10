@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membuka Aplikasi · IMD</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080C12;--bg2:#0D1117;
+  --cy:#00D4FF;--cy2:#00B8D9;--teal:#00897B;
+  --gold:#D4A847;--gold2:#F5CC6B;
+  --gl:rgba(0,212,255,0.04);--gb:rgba(0,212,255,0.09);--gb2:rgba(0,212,255,0.18);
+  --gld:rgba(212,168,71,0.08);--gldb:rgba(212,168,71,0.2);
+  --t:#E8F4F8;--t2:#9DB8C8;--t3:#4A6070;
+  --gn:#00E676;--rd:#FF5252;--am:#FFD740;
+  --r12:12px;--r16:16px;--r20:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;display:flex;flex-direction:column;}
+.top-bar{padding:14px 28px;border-bottom:1px solid var(--gb);display:flex;align-items:center;gap:12px;background:rgba(8,12,18,0.85);backdrop-filter:blur(16px);}
+.top-bar-brand{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.top-bar-sep{color:var(--t3);font-size:0.7rem;}
+.top-bar-cur{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);}
+.top-bar-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.top-bar-link{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-decoration:none;transition:color 0.2s;}
+.top-bar-link:hover{color:var(--gold);}
+
+.center{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.box{width:100%;max-width:460px;text-align:center;}
+
+/* Spinner */
+.spin-wrap{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.loader{width:48px;height:48px;border:3px solid var(--gb2);border-top-color:var(--cy);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin-label{font-family:'JetBrains Mono',monospace;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--t2);}
+
+/* Status cards */
+.status-card{background:rgba(13,17,23,0.8);border:1px solid var(--gb);border-radius:var(--r20);padding:36px 32px;text-align:center;}
+.status-icon{font-size:3rem;margin-bottom:16px;}
+.status-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:8px;}
+.status-msg{font-size:0.9rem;color:var(--t2);line-height:1.7;margin-bottom:24px;}
+.trial-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:1.5px;font-weight:700;text-transform:uppercase;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);color:var(--cy2);margin-bottom:20px;}
+.trial-dot{width:6px;height:6px;border-radius:50%;background:var(--cy);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--r12);padding:12px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;text-decoration:none;border:none;width:100%;margin-bottom:10px;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--am));color:#0A0A2A;}
+.btn-gold:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,168,71,0.25);}
+.btn-cy{background:linear-gradient(135deg,var(--cy2),var(--teal));color:#fff;}
+.btn-cy:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--gb2);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="/" class="top-bar-brand">IMD · Ingat Masa Depan</a>
+  <span class="top-bar-sep">›</span>
+  <span class="top-bar-cur" id="appLabel">Launcher</span>
+  <div class="top-bar-right">
+    <a href="/imd-toolkit/" class="top-bar-link">← Toolkit</a>
+  </div>
+</div>
+
+<div class="center">
+  <div class="box">
+
+    <!-- Loading -->
+    <div id="stateLoading" class="spin-wrap">
+      <div class="loader"></div>
+      <div class="spin-label">Memeriksa akses...</div>
+    </div>
+
+    <!-- All error/info states hidden initially -->
+    <div id="stateCard" class="status-card" style="display:none">
+      <div class="status-icon" id="cardIcon">🔐</div>
+      <div class="status-title" id="cardTitle">Judul</div>
+      <div id="trialBadge" style="display:none" class="trial-badge">
+        <div class="trial-dot"></div>
+        <span id="trialDaysText">7 hari tersisa</span>
+      </div>
+      <div class="status-msg" id="cardMsg">Pesan</div>
+      <div id="cardActions"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/platform/imd-platform.js"></script>
+<script>
+const APP_MAP = {
+  general: { file: 'financebook.html',        name: 'FinanceBook General', icon: '📒' },
+  fnb:     { file: 'financebook-fnb.html',    name: 'FinanceBook F&B',     icon: '🍽️' },
+  retail:  { file: 'financebook-retail.html', name: 'FinanceBook Retail',  icon: '🛒' }
+};
+
+function showState(icon, title, msg, actions = [], trialDays = null) {
+  document.getElementById('stateLoading').style.display = 'none';
+  const card = document.getElementById('stateCard');
+  card.style.display = 'block';
+  document.getElementById('cardIcon').textContent  = icon;
+  document.getElementById('cardTitle').textContent = title;
+  document.getElementById('cardMsg').innerHTML     = msg;
+
+  // Trial badge
+  const badge = document.getElementById('trialBadge');
+  if (trialDays !== null) {
+    badge.style.display = 'inline-flex';
+    document.getElementById('trialDaysText').textContent = `Trial: ${trialDays} hari tersisa`;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  const actDiv = document.getElementById('cardActions');
+  actDiv.innerHTML = '';
+  actions.forEach(a => {
+    const btn = document.createElement('a');
+    btn.href = a.href;
+    btn.className = `btn ${a.cls || 'btn-gold'}`;
+    btn.textContent = a.text;
+    actDiv.appendChild(btn);
+  });
+}
+
+async function checkAndLaunch() {
+  const appKey = IMD.U.getParam('app') || 'general';
+  const appInfo = APP_MAP[appKey];
+  document.getElementById('appLabel').textContent = appInfo ? appInfo.name : appKey;
+
+  if (!appInfo) {
+    showState('❓', 'App Tidak Ditemukan', `App key "<strong>${IMD.U.escHtml(appKey)}</strong>" tidak dikenal.`,
+      [{ href: '/imd-toolkit/', text: '← Kembali ke Toolkit', cls: 'btn-ghost' }]);
+    return;
+  }
+
+  if (!IMD.Auth.isLoggedIn()) {
+    const redirect = encodeURIComponent(location.href);
+    setTimeout(() => IMD.U.redirect('/auth/login.html?redirect=' + redirect), 1400);
+    showState('🔐', 'Belum Login',
+      'Kamu perlu login untuk mengakses ' + appInfo.name + '. Mengalihkan ke halaman login...',
+      [{ href: '/auth/login.html?redirect=' + encodeURIComponent(location.href), text: 'Login Sekarang', cls: 'btn-gold' }]);
+    return;
+  }
+
+  if (!IMD.Store.isConfigured()) {
+    showState('⚙️', 'Platform Belum Dikonfigurasi',
+      'Platform sedang dalam proses setup. Hubungi admin IMD untuk bantuan.',
+      [{ href: '/imd-toolkit/', text: '← Kembali', cls: 'btn-ghost' }]);
+    return;
+  }
+
+  // Deep check with app-level guard
+  const result = await IMD.Guard.check(true, appKey);
+
+  if (result.ok) {
+    // Allowed — launch the app
+    if (result.isTrial) {
+      // Brief trial notice before launch
+      showState(appInfo.icon, 'Membuka ' + appInfo.name,
+        'Kamu sedang dalam masa trial. Semua data tersimpan lokal di browser.',
+        [{ href: appInfo.file, text: 'Buka Sekarang →', cls: 'btn-cy' }],
+        result.trialDaysLeft);
+      setTimeout(() => window.location.replace(appInfo.file), 1200);
+    } else {
+      window.location.replace(appInfo.file);
+    }
+    return;
+  }
+
+  // Handle failure reasons
+  const actions_sub   = [
+    { href: '/subscribe/', text: 'Pilih Paket Berlangganan', cls: 'btn-gold' },
+    { href: '/imd-toolkit/', text: '← Toolkit', cls: 'btn-ghost' }
+  ];
+  const actions_back  = [{ href: '/imd-toolkit/', text: '← Kembali ke Toolkit', cls: 'btn-ghost' }];
+  const actions_login = [{ href: '/dashboard/', text: 'Dashboard Saya', cls: 'btn-cy' },
+                         { href: '/imd-toolkit/', text: '← Toolkit', cls: 'btn-ghost' }];
+
+  const reasons = {
+    not_logged_in:   ['🔐', 'Belum Login',            'Silakan login untuk melanjutkan.',
+                      [{ href: '/auth/login.html', text: 'Login', cls: 'btn-gold' }]],
+    not_configured:  ['⚙️', 'Platform Belum Siap',    'Hubungi admin IMD untuk setup platform.', actions_back],
+    no_company:      ['🏢', 'Akun Tidak Valid',        'Session bermasalah. Silakan login ulang.',
+                      [{ href: '/auth/login.html', text: 'Login Ulang', cls: 'btn-gold' }]],
+    pending:         ['⏳', 'Menunggu Verifikasi',     'Pembayaran kamu sedang diverifikasi admin (estimasi 1×24 jam kerja). Kamu akan mendapat konfirmasi via WA.', actions_login],
+    expired:         ['📅', 'Langganan Kadaluarsa',   'Langganan kamu telah berakhir. Perpanjang untuk lanjut mengakses ' + appInfo.name + '.', actions_sub],
+    trial_expired:   ['⏰', 'Trial Berakhir',          'Masa trial 7 hari kamu sudah berakhir. Berlangganan untuk tetap bisa mengakses FinanceBook.', actions_sub],
+    no_subscription: ['🔒', 'Belum Berlangganan',     'Pilih paket yang sesuai untuk mengakses ' + appInfo.name + '.', actions_sub],
+    plan_mismatch:   ['📦', 'Paket Tidak Termasuk',   appInfo.name + ' tidak termasuk dalam paket kamu saat ini. Upgrade untuk mendapatkan akses.',
+                      [{ href: '/subscribe/', text: 'Upgrade Paket', cls: 'btn-gold' },
+                       { href: '/imd-toolkit/', text: '← Toolkit', cls: 'btn-ghost' }]],
+  };
+
+  const [icon, title, msg, acts] = reasons[result.reason] || ['❓', 'Akses Ditolak', result.reason, actions_back];
+  showState(icon, title, msg, acts);
+}
+
+IMD.init().then(checkAndLaunch).catch(e => {
+  console.error('Launcher error:', e);
+  document.getElementById('stateLoading').style.display = 'none';
+  document.getElementById('stateCard').style.display = 'block';
+  document.getElementById('cardIcon').textContent  = '⚠️';
+  document.getElementById('cardTitle').textContent = 'Terjadi Kesalahan';
+  document.getElementById('cardMsg').textContent   = e.message || 'Gagal memuat platform. Periksa koneksi internet.';
+  document.getElementById('cardActions').innerHTML =
+    '<a href="/imd-toolkit/" class="btn btn-ghost">← Kembali ke Toolkit</a>';
+});
+</script>
+</body>
+</html>
